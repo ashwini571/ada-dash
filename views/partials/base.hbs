@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>
+        {{#if title }}
+            {{title}}
+        {{else}}
+           CPI-Dashboard
+        {{/if}}
+    </title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+    {{#> head-block}}
+    {{!-- Custom <head> content per page could be added. --}}
+    {{/head-block}}
+
+</head>
+<body>
+
+{{#> body-block}}
+{{!-- body content goes here. --}}
+{{/body-block}}
+
+
+<footer>
+    {{#> footer-block}}
+
+    {{/footer-block}}
+</footer>
+
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS. -->
+<script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
+<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+{{#> scripts-block}}
+{{!-- Custom scripts per page can be added. --}}
+{{/scripts-block}}
+
+</body>
+</html>
