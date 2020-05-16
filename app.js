@@ -1,32 +1,28 @@
-let path = require('path')
-let cookieParser = require('cookie-parser')
 let logger = require('morgan')
-let indexRouter = require('./routes')
+let indexRouter = require('./routes/index')
+let analyticsRouter = require('./routes/analytics')
 let AWS = require('aws-sdk')
 let express = require('express')
-let bodyParser = require('body-parser')
 let createError = require('http-errors')
-let axios = require('axios')
+
 
 AWS.config.region = process.env.REGION
 let app = express()
-
-
 let hbs = require('hbs');
 
 hbs.registerPartials(__dirname + '/views/partials')
 
 app.use(logger('dev'))
 app.use(express.json())
+
 // view engine setup
 app.set('view engine', 'hbs')
 app.set('views',__dirname + '/views')
-app.use(bodyParser.urlencoded({extended:false}))
 app.use(express.static(__dirname))
 
 //Route files
 app.use('/', indexRouter)
-
+app.use('/analytics', analyticsRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

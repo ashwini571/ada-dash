@@ -4,29 +4,16 @@
 <div class="container">
     <h1>{{title}}</h1>
     <p>Welcome to {{title}}</p>
-    <div class="table-responsive">
-        <table class="table">
-            <thead class="thead-dark">
-            <tr>
+    {{id}}
+    <ul class="list-group">
+        {{#each result}}
+            <a href="">
+                <li class="list-group-item">{{title}}</li>
+            </a>
+        {{/each}}
+    </ul>
 
-                {{# each result.fields}}
-                <th scope="col">{{name}}</th>
-                {{/each}}
 
-            </tr>
-            </thead>
-            <tbody>
-
-            {{# each result.rows}}
-            <tr>
-                  <td>{{store_id}}</td>
-                  <td>{{download_time}}</td>
-            </tr>
-            {{/each}}
-
-            </tbody>
-        </table>
-    </div>
 </div>
 {{/inline}}
 
