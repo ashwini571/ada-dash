@@ -16,8 +16,9 @@ router.get('/:id', (req, res, )=> {
             if(err)
                 res.render('templates/anayltics',{title:"Error", error:error})
             else
-                res.render('templates/analytics', { title: 'Analytics',result:result})
+                res.render('templates/analytics', { title: 'Analytics',result:JSON.stringify(result.rows)})
         })
+
     })
 
 })

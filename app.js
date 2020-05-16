@@ -5,7 +5,6 @@ let AWS = require('aws-sdk')
 let express = require('express')
 let createError = require('http-errors')
 
-
 AWS.config.region = process.env.REGION
 let app = express()
 let hbs = require('hbs');
@@ -18,8 +17,8 @@ app.use(express.json())
 // view engine setup
 app.set('view engine', 'hbs')
 app.set('views',__dirname + '/views')
-app.use(express.static(__dirname))
 
+app.use('/static', express.static(__dirname + '/node_modules/'));
 //Route files
 app.use('/', indexRouter)
 app.use('/analytics', analyticsRouter)

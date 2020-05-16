@@ -15,9 +15,11 @@
     "hbs": "^4.1.1",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
+    "jqueryui": "^1.11.1",
     "morgan": "~1.9.1",
     "node-redshift": "^0.1.5",
     "nodemon": "^2.0.3",
+    "pivottable": "^2.23.0",
     "popper.js": "^1.16.1",
     "sqlite3": "^4.2.0"
   }

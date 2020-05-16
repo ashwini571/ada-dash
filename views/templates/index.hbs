@@ -1,21 +1,22 @@
 {{#> base  }}
 
-{{#*inline "body-block" }}
-<div class="container">
-    <h1>{{title}}</h1>
-    <p>Welcome to {{title}}</p>
-    {{id}}
-    <ul class="list-group">
-        {{#each result}}
-            <a href="">
-                <li class="list-group-item">{{title}}</li>
-            </a>
-        {{/each}}
-    </ul>
+    {{#*inline "body-block" }}
+        <div class="container">
+        <h1>{{title}}</h1>
+        <p>Welcome to {{title}}</p>
+        {{id}}
+        <ul class="list-group">
+            {{#each result}}
+                <a href="">
+                    <li class="list-group-item">{{title}}</li>
+                </a>
+            {{/each}}
+        </ul>
 
+        <div id="output"></div>
+        </div>
 
-</div>
-{{/inline}}
+    {{/inline}}
 
 {{/base}}
 

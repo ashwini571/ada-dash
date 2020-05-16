@@ -1,34 +1,34 @@
 {{#> base  }}
 
+    {{#*inline "head-block" }}
+        <link rel="stylesheet" href="/static/pivottable/dist/pivot.css">
+    {{/inline}}
+
     {{#*inline "body-block" }}
+
         <div class="container">
             <h1>{{title}}</h1>
-            <p>Welcome to {{title}}</p>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="thead-dark">
-                    <tr>
+            <p id="pp">Welcome to {{title}}</p>
 
-                        {{# each result.fields}}
-                            <th scope="col">{{name}}</th>
-                        {{/each}}
+            <div id="output"></div>
 
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    {{# each result.rows}}
-                        <tr>
-                            <td>{{store_id}}</td>
-                            <td>{{download_time}}</td>
-                        </tr>
-                    {{/each}}
-
-                    </tbody>
-                </table>
-            </div>
         </div>
     {{/inline}}
+
+    {{#*inline "scripts-block" }}
+        <script src="/static/jqueryui/jquery-ui.js"></script>
+        <script src="/static/pivottable/dist/pivot.js"></script>
+        <script>
+            $(document).ready(function() {
+                    $("#output").pivotUI(
+                        {{{result}}}
+                    );
+            });
+
+        </script>
+    {{/inline}}
+
+
 
 {{/base}}
 
