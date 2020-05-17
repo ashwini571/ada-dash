@@ -12,5 +12,9 @@ router.get('/', (req, res, next)=>{
   })
 
 })
+router.get('/add',(req,res)=>{
+
+  res.render('templates/index',{title:'Add!'})
+})
 
 module.exports = router

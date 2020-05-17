@@ -1,19 +1,39 @@
 {{#> base  }}
-
+{{#*inline "head-block" }}
+    <link rel="stylesheet" href="/public/css/cards.css">
+{{/inline}}
     {{#*inline "body-block" }}
         <div class="container">
-        <h1>{{title}}</h1>
-        <p>Welcome to {{title}}</p>
-        {{id}}
-        <ul class="list-group">
-            {{#each result}}
-                <a href="">
-                    <li class="list-group-item">{{title}}</li>
-                </a>
-            {{/each}}
-        </ul>
+            <br><br><br>
+            <div class="row">
+                <div class="col-md-10">
+                    <h1>ADA-Dashboard</h1>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-secondary btn-lg"><span></span> + Add</button>
+                </div>
+            </div>
 
-        <div id="output"></div>
+            <br><br><br>
+        </div>
+
+        <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
+
+        <div class="container">
+            <div class="row">
+
+                {{#each result}}
+                    <div class="column">
+                        <a href="/analytics/{{id}}" class="custom-card">
+                            <div class="card">
+                                <p>{{title}}</p>
+                            </div>
+                        </a>
+                    </div>
+                {{/each}}
+
+
+            </div>
         </div>
 
     {{/inline}}

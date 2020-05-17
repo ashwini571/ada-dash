@@ -19,6 +19,7 @@ app.set('view engine', 'hbs')
 app.set('views',__dirname + '/views')
 
 app.use('/static', express.static(__dirname + '/node_modules/'));
+app.use('/public', express.static(__dirname + '/public/'));
 //Route files
 app.use('/', indexRouter)
 app.use('/analytics', analyticsRouter)
