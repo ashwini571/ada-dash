@@ -9,7 +9,7 @@ let client = {
     port:CONFIG.port,
     host:CONFIG.host
 }
-
+let clusterName = CONFIG.host.split('.')[0]
 try{
     redshiftClient = new Redshift(client)
 }
@@ -18,4 +18,7 @@ catch(e)
     console.log("Something went wrong " + e)
 }
 
-module.exports = redshiftClient
+module.exports={
+    redshiftClient:redshiftClient,
+    clusterName:clusterName
+}

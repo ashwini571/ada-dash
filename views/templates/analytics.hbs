@@ -6,24 +6,34 @@
 
     {{#*inline "body-block" }}
 
-        <div class="container">
-            <h1>{{title}}</h1>
-            <p id="pp">Welcome to {{title}}</p>
-
-            <div id="output"></div>
+        <div class="container" >
+            <p>{{title}}</p>
+            <div id="output" class="table-responsive" style="height:600px"></div>
 
         </div>
     {{/inline}}
 
-    <!-- Scripts for pivottable  -->
+   
     {{#*inline "scripts-block" }}
+        <!-- jquerui is a dependency for using pivotui function -->
         <script src="/static/jqueryui/jquery-ui.js"></script>
         <script src="/static/pivottable/dist/pivot.js"></script>
+    
+        <!-- CDNs (Plotly for graphic visualisation) -->
+        <script src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.22.0/plotly_renderers.min.js"></script>
+        
+        <!-- Scripts for pivottable  -->
         <script>
+
             $(document).ready(function() {
-                    $("#output").pivotUI(
-                        {{{result}}}
-                    );
+                let derivers = $.pivotUtilities.derivers;
+                let renderers = $.extend($.pivotUtilities.renderers,
+                        $.pivotUtilities.plotly_renderers);
+                $("#output").pivotUI({{{result}}}, {
+                    renderers: renderers,
+                    rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
+                });
             });
 
         </script>
