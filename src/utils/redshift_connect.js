@@ -1,12 +1,21 @@
 let Redshift = require('node-redshift')
+let CONFIG = require('./redshift_config')
+let redshiftClient
 
 let client = {
-    user:'awsuser',
-    database:'cpi',
-    password:'Gokaruna123',
-    port:5439,
-    host:'redshift-cluster-1.c1t7hdxqfbsq.ap-south-1.redshift.amazonaws.com'
+    user:CONFIG.user,
+    database:CONFIG.database,
+    password:CONFIG.password,
+    port:CONFIG.port,
+    host:CONFIG.host
 }
-let redshiftClient = new Redshift(client)
+
+try{
+    redshiftClient = new Redshift(client)
+}
+catch(e)
+{
+    console.log("Something went wrong " + e)
+}
 
 module.exports = redshiftClient
