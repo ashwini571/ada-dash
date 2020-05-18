@@ -17,6 +17,7 @@ router.get('/:id', (req, res, )=> {
             return res.render('templates/anayltics',{title:"Error", error:err})
         let queryStr = row.query
         let title = row.title
+        console.log(queryStr)
         // execute query and invoke callback...
         redshiftClient.query(queryStr,(error,result)=>{
             if(err)
