@@ -6,9 +6,10 @@ let express = require('express')
 let createError = require('http-errors')
 
 AWS.config.region = process.env.REGION
-let app = express()
-let hbs = require('hbs');
 
+let app = express()
+//template engine
+let hbs = require('hbs');
 hbs.registerPartials(__dirname + '/views/partials')
 
 app.use(logger('dev'))
