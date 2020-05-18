@@ -10,7 +10,12 @@
             <br><br><br>
             <h3 style="font-family: 'Hammersmith One', sans-serif;	border-left:5px solid black;padding-left: 10px"> {{ title}}</h3>
             <br><br><br>
-            <div id="output" class="table-responsive" style="height:600px"></div>
+            <div class="row">
+                <button type="button" class="btn btn-sm btn-info" data-toggle="popover" data-trigger="focus" title="Help" data-content="Drag And Drop the Columns to Visualise" >Help!</button>
+            </div>
+            <div class="row">
+                <div id="output" class="table-responsive " style="height:600px"></div>
+            </div>
 
         </div>
     {{/inline}}
@@ -25,18 +30,25 @@
         <script src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.22.0/plotly_renderers.min.js"></script>
         
-        <!-- Scripts for pivottable  -->
+        <!-- Scripts for pivottable and helpbox  -->
         <script>
 
             $(document).ready(function() {
-                let derivers = $.pivotUtilities.derivers;
+                let derivers = $.pivotUtilities.derivers
                 let renderers = $.extend($.pivotUtilities.renderers,
-                        $.pivotUtilities.plotly_renderers);
+                        $.pivotUtilities.plotly_renderers)
+
                 $("#output").pivotUI({{{result}}}, {
                     renderers: renderers,
                     rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
-                });
-            });
+                })
+                //Popup Helpbox
+                $('[data-toggle="popover"]').popover()
+                $('.popover-dismiss').popover({
+                    trigger: 'focus'
+                })
+
+            })
 
         </script>
     {{/inline}}
