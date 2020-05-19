@@ -4,7 +4,7 @@ const sqliteDb = require('../src/utils/sqlite_connect')
 
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 
 /* GET home page. */
