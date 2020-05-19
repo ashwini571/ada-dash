@@ -11,21 +11,14 @@ const clusterName = redshift.clusterName
 router.get('/:id', (req, res, )=> {
 
     /* fetching all cases from sqlite */
-    let sql = `SELECT query,title FROM analytics_cases WHERE id="${req.params.id}" `
-    sqliteDb.get(sql,[],(err,row)=>{
-        if(err)
-            return res.render('templates/anayltics',{title:"Error", error:err})
-        let queryStr = row.query
-        let title = row.title
-        console.log(queryStr)
-        // execute query and invoke callback...
-        redshiftClient.query(queryStr,(error,result)=>{
-            if(err)
-                res.render('templates/anayltics',{title:"Error", error:error})
-            else
-                res.render('templates/analytics', { title:title, clusterName:clusterName,
-                    result:JSON.stringify(result.rows)})
-        })
+    let sql = `SELECT ac.title,aq.type,aq.query,aq.last_fetched FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
+    sqliteDb.all(sql,[],(err,row)=>{
+
+        if(err || row.length==0)
+            return res.render('templates/analytics',{title:"Error",Error:err})
+
+        res.render('templates/analytics', { title:row[0].title, clusterName:clusterName})
+
     })
 
 })

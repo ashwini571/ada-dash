@@ -24,9 +24,14 @@ clusters at the backend and automates the process of running queries on redshift
 ## DB-Schema(Sqlite)
 **analytics_cases**
 
-id  | title | query | last_fetched
------ | -------- | ------ | -------
-   |   |  |  |
+id  | title |
+----- | -------- |
+
+ **all_queries**  
+ 
+  usecase_id  | type | title | query | last_fetched|
+  ----- | -------- | -------- | ----| ------------|
+    
 
 
 
