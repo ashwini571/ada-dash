@@ -1,0 +1,81 @@
+{{#> base}}
+
+    {{#*inline "body-block" }}
+        <div class="container" >
+            <br><br>
+            <div class="row">
+                <a class="btn btn-secondary" href="">Add Filter</a>
+            </div>
+            <br><br>
+        </div>
+        <div class="container">
+            <div class="accordion" id="accordionExample">
+                {{#each result }}
+                    <div class="card">
+                        <div class="card-header" id="heading{{id}}">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
+                                    {{title}}
+                                </button>
+                            </h2>
+                        </div>
+
+                        <div id="collapse{{id}}" class="collapse" aria-labelledby="heading{{id}}" data-parent="#accordionExample">
+                            <div class="card-body">
+
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="name" class="col-sm-2 control-label">Type</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control" name="" id="type{{id}}" value="{{type}}" disabled>
+                                                <option value="count/percent" {{#ifCond type '==' "count/percent" }}selected{{/ifCond}}>count/percent</option>
+                                                <option value="filter" {{#ifCond type '===' "filter" }}selected{{/ifCond}}>filter</option>
+                                                <option value="all_data" {{#ifCond type '===' "all_data" }}selected{{/ifCond}}>all_data</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="title" class="col-sm-2 control-label">Title</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" id="title{{id}}" value="{{title}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Query" class="col-sm-2 control-label">Query</label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" id="query{{id}}"  disabled>{{query}}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="edit" class="btn btn-outline-secondary" id="edit{{id}}" onclick="return handleEdit({{id}})">Edit</button>
+                                            <button type="submit" class="btn btn-outline-secondary" id="save{{id}}" hidden>Save</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+
+            </div>
+
+        </div>
+
+    {{/inline}}
+    {{#*inline "scripts-block" }}
+        <script>
+            function handleEdit(id) {
+                document.getElementById('type'+id).disabled = false;
+                document.getElementById('title'+id).disabled = false;
+                document.getElementById('query'+id).disabled = false;
+                document.getElementById('edit'+id).hidden = true;
+                document.getElementById('save'+id).hidden = false;
+
+                return false;
+            }
+        </script>
+    {{/inline}}
+{{/base}}
+
