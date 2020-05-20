@@ -25,12 +25,6 @@ router.get('/:id', (req, res )=> {
 
 })
 
-router.get('/add_filter/:id', (req,res)=>{
-    res.render('templates/add_filter')
-})
 
-router.post('/add_filter/:id', (req,res)=>{
-    res.render('templates/add_filter')
-})
 
 module.exports = router

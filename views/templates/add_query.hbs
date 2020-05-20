@@ -6,11 +6,15 @@
             <div class="container card" style="padding-bottom: 20px;">
                 <form method="post" action="/add">
                     <div class="text-center" style="padding-top:28px ">
-                        <h1 class="h3 mb-3 font-weight-normal">Add Filter For :-</h1>
+                        <h1 class="h3 mb-3 font-weight-normal">Add Query For :-</h1>
                         <h2>{{title}}</h2>
                     </div>
-                    <label>Id :</label>
-                    <input type="text" name="id" class="form-control -p3" placeholder=""><br>
+                    <label>Type :</label>
+                    <select class="form-control" name="" id="type{{id}}" value="{{type}}">
+                        <option value="count/percent" {{#ifCond type '==' "count/percent" }}selected{{/ifCond}}>count/percent</option>
+                        <option value="filter" {{#ifCond type '===' "filter" }}selected{{/ifCond}}>filter</option>
+                        <option value="all_data" {{#ifCond type '===' "all_data" }}selected{{/ifCond}}>all_data</option>
+                    </select><br>
                     <label >Title :</label>
                     <input type="text" name="title" class="form-control -p3"><br>
                     <label>Query :</label>

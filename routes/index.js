@@ -23,14 +23,14 @@ router.get('/add',(req,res)=>{
 })
 
 router.post('/add',urlencodedParser,(req,res)=>{
-  let sql = `INSERT INTO analytics_cases(id,title,query) VALUES(${req.body.id},${req.body.title},${req.body.query})`
+  let sql = `INSERT INTO analytics_cases(id,title) VALUES("${req.body.id}","${req.body.title}")`
 
   sqliteDb.run(sql,[],(err)=>{
     console.log(err)
     if(err)
-      res.render('templates/add_usecase',{title:'Add', error:"Unable to Add"})
+      res.render('templates/add_usecase',{title:'Add', error:err})
     else
-      res.render('templates/add_usecase',{title:'Add', msg:"Successfully Added"})
+      res.render('templates/add_usecase',{title:'Add', msg:"Added Successfully"})
   })
 
 
