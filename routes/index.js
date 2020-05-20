@@ -17,12 +17,13 @@ router.get('/', (req, res, next)=>{
 
 })
 
-/* Adding Use cases */
+/* GET Adding Use cases */
 router.get('/add',(req,res)=>{
   res.render('templates/add_usecase',{title:'Add'})
 })
-
+/* POST Adding Use cases */
 router.post('/add',urlencodedParser,(req,res)=>{
+
   let sql = `INSERT INTO analytics_cases(id,title) VALUES("${req.body.id}","${req.body.title}")`
 
   sqliteDb.run(sql,[],(err)=>{
