@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    //Pivottable
+    // Pivottable
     function createPivottable(data)
     {
         /* Emptying fields before appending */
@@ -14,39 +14,40 @@ $(document).ready(function() {
             renderers: renderers,
             rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
         })
-        //Popup Helpbox
+        // Popup Helpbox
         $('[data-toggle="popover"]').popover()
         $('.popover-dismiss').popover({
             trigger: 'focus'
         })
     }
+    /* Used to clear the output area*/
     function clearCard()
     {
         let fieldsElem = document.getElementById('fields')
         let rowsElem= document.getElementById('rows')
         let pivotOutput = document.getElementById('output')
 
-        /* Emptying fields before appending */
+        /* Emptying fields */
         fieldsElem.innerHTML = ""
         rowsElem.innerHTML = ""
         pivotOutput.innerHTML = ""
     }
+    /* Adds the recieved data to output */
     function parseDataToDom(data,type)
     {
         if(type == 'all_data')
             createPivottable(data)
         else
-        {
+        {   //Data
             let rows = JSON.parse(data.rows)
             let fields = JSON.parse(data.fields)
-
+            //Data Target
             let fieldsElem = document.getElementById('fields')
             let rowsElem= document.getElementById('rows')
             let pivotOutput = document.getElementById('output')
 
             /* Emptying fields before appending */
             clearCard()
-
             for(let field in fields)
             {
                 fieldsElem.innerHTML += `<th scope="col">${fields[field].name}</th>`
@@ -63,8 +64,12 @@ $(document).ready(function() {
             }
         }
     }
-
-    //Fetching data
+    function noDataToDom(data)
+    {
+        let output = document.getElementById('output')
+        output.innerText = data
+    }
+    // Fetching data
     function getData(reqBody)
     {
         console.log(reqBody)
@@ -77,13 +82,19 @@ $(document).ready(function() {
             .then((res)=>{
               return res.json()
             }).then((data)=>{
-                parseDataToDom(data,reqBody.type)
+                if(data.error)
+                    noDataToDom(data.error)
+                else
+                    parseDataToDom(data,reqBody.type)
             })
     }
 
+
+
+
     var elements = document.getElementsByClassName('dropdown-item');
 
-    //Event-listener for dropdown items
+    /*Event-listener for dropdown items*/
     Array.from(elements).forEach((element) => {
         element.addEventListener('click', (event) => {
             let queryType = element.getAttribute("query_type")
@@ -92,6 +103,7 @@ $(document).ready(function() {
             {
                 let outputDiv = document.getElementById('output')
                 clearCard()
+                /* Adding Input field to DOM  */
                 outputDiv.innerHTML = "<input type=\"text\" id=\"query_value\" name=\"query_value\">"
                 outputDiv.innerHTML += "<button type=\"button\" id=\"query_button\">Search</button>"
 
@@ -106,8 +118,6 @@ $(document).ready(function() {
                     }
                     getData(reqBody)
                  })
-
-
             }
             else
             {
