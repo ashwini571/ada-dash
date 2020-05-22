@@ -41,4 +41,7 @@ router.post('/add',urlencodedParser,(req,res)=>{
 
 })
 
+router.get('/redshift_config', (req,res)=>{
+  res.render('templates/edit_redshift_config',{title:'Redshift Config.'})
+})
 module.exports = router

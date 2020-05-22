@@ -12,11 +12,11 @@ $(document).ready(function() {
     // Updating via fetch()
     function putData(reqBody) {
         let init = {
-            method: "POST",
+            method: "PUT",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(reqBody)
         }
-        fetch("/add_query/" + reqBody.usecase_id + "/update", init)
+        fetch("/handle_query/" + reqBody.usecase_id + "/update", init)
             .then((res) => {
                 return res.json()
             }).then((data) => {
@@ -42,6 +42,35 @@ $(document).ready(function() {
             putData(reqBody)
         })
     })
+
+    function delData(id) {
+        let init = {
+            method: "DELETE",
+        }
+        fetch("/handle_query/delete/"+id, init)
+            .then((res) => {
+                return res.json()
+            }).then((data) => {
+            if (data.msg) {
+                alert("Deleted Successfully!")
+                location.reload()
+            }
+            else
+                alert(data.error)
+        })
+    }
+
+    let delButtons = document.getElementsByClassName('del-button')
+    Array.from(delButtons).forEach((element) => {
+        element.addEventListener('click', (event) => {
+            event.preventDefault()
+            let id = element.id.slice(6)
+            console.log(id)
+            if(window.confirm("Are you sure ?"))
+                delData(id)
+        })
+    })
+
 
 })
 

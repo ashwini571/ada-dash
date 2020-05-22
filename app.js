@@ -2,7 +2,7 @@ let logger = require('morgan')
 let indexRouter = require('./routes/index')
 let analyticsRouter = require('./routes/analytics')
 let allQueriesRouter = require('./routes/all_queries')
-let addFilterRouter = require('./routes/CRUD_query')
+let crudFilterRouter = require('./routes/CRUD_query')
 let AWS = require('aws-sdk')
 let express = require('express')
 let createError = require('http-errors')
@@ -55,7 +55,7 @@ app.use('/public', express.static(__dirname + '/public/'));
 app.use('/', indexRouter)
 app.use('/analytics', analyticsRouter)
 app.use('/all_queries', allQueriesRouter)
-app.use('/add_query', addFilterRouter)
+app.use('/handle_query', crudFilterRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

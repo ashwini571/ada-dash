@@ -4,7 +4,7 @@
         <div class="container" >
             <br><br>
             <div class="row">
-                <a class="btn btn-secondary" href="/add_query/{{result.0.usecase_id}}">Add Query</a>
+                <a class="btn btn-secondary" href="/handle_query/{{result.0.usecase_id}}">Add Query</a>
             </div>
             <br><br>
         </div>
@@ -50,6 +50,7 @@
                                         <div class="col-sm-offset-2 col-sm-10">
                                             <button type="edit" class="btn btn-outline-secondary" id="edit{{id}}" onclick="return handleEdit({{id}})">Edit</button>
                                             <button type="submit" class="btn btn-outline-secondary" id="save{{id}}" hidden>Save</button>
+                                            <button type="delete" class="btn btn-danger del-button" id="delete{{id}}">Delete</button>
                                         </div>
                                     </div>
                                     <input type="hidden" name="id{{id}}" value="{{id}}">

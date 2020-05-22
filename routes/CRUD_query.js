@@ -31,7 +31,7 @@ router.post('/:usecase_id/insert', urlencodedParser, (req,res)=>{
 })
 
 /* POST, Updating Queries;  */
-router.post('/:usecase_id/update', urlencodedParser, (req,res)=>{
+router.put('/:usecase_id/update', urlencodedParser, (req,res)=>{
 
     let sql = `UPDATE all_queries SET type="${req.body.type}", title="${req.body.title}", query="${req.body.query}" WHERE id=${req.body.id}`
     console.log(sql)
@@ -43,6 +43,18 @@ router.post('/:usecase_id/update', urlencodedParser, (req,res)=>{
             res.send({msg:"Updated Successfully!"})
     })
 
+})
+
+router.delete('/delete/:id', (req,res)=>{
+
+    let sql=`DELETE FROM all_queries WHERE id=${req.params.id}`
+    sqliteDb.run(sql,[],(err)=>{
+        console.log(err)
+        if(err)
+            res.send({error:err})
+        else
+            res.send({msg:"Deleted Successfully!"})
+    })
 })
 
 module.exports = router
