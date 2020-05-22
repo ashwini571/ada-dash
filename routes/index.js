@@ -44,4 +44,16 @@ router.post('/add',urlencodedParser,(req,res)=>{
 router.get('/redshift_config', (req,res)=>{
   res.render('templates/edit_redshift_config',{title:'Redshift Config.'})
 })
+
+router.get('/search', (req,res)=>{
+
+  let sql = `SELECT * FROM analytics_cases WHERE title LIKE '%${req.query.key}%' OR id LIKE '${req.query.key}' `
+
+  sqliteDb.all(sql,(err,rows)=>{
+    console.log(rows.length)
+    res.render('templates/index',{error:err, result:rows, title:'Search Results',clusterName:clusterName})
+  })
+})
+
+
 module.exports = router
