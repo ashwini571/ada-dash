@@ -1,0 +1,34 @@
+// Pivottable
+function createPivottable(data)
+{
+    let modifiedData = JSON.parse(data.rows)
+    let derivers = $.pivotUtilities.derivers
+    let renderers = $.extend($.pivotUtilities.renderers,
+        $.pivotUtilities.plotly_renderers)
+
+    $("#output").pivotUI(modifiedData, {
+        renderers: renderers,
+        rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
+    })
+
+}
+
+// Fetching data
+function getData(reqBody,url,callback)
+{
+    info.innerText = "Loading..."
+    console.log(reqBody)
+
+    let init ={
+        method:"POST",
+        headers: { 'Content-Type': 'application/json' },
+        body:JSON.stringify(reqBody)
+    }
+    fetch(url,init)
+        .then((res)=>{
+            return res.json()
+        }).then((data)=>{
+        callback(data)
+    })
+
+}

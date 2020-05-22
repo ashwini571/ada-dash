@@ -2,34 +2,13 @@ $(document).ready(function() {
 
     // Data Targets
     let fieldsElem = document.getElementById('fields')
-    let rowsElem= document.getElementById('rows')
+    let rowsElem = document.getElementById('rows')
     let pivotOutput = document.getElementById('output')
     let infoElem = document.getElementById('info')
     let output = document.getElementById('output')
 
-    // Pivottable
-    function createPivottable(data)
-    {
-        /* Emptying fields before appending */
-        clearCard()
-
-        let modifiedData = JSON.parse(data.rows)
-        let derivers = $.pivotUtilities.derivers
-        let renderers = $.extend($.pivotUtilities.renderers,
-            $.pivotUtilities.plotly_renderers)
-        $("#output").pivotUI(modifiedData, {
-            renderers: renderers,
-            rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
-        })
-        // Popup Helpbox
-        $('[data-toggle="popover"]').popover()
-        $('.popover-dismiss').popover({
-            trigger: 'focus'
-        })
-    }
-    /* Used to clear the output area*/
-    function clearCard()
-    {
+    /* Used to clear the output area */
+    function clearCard() {
         /* Emptying fields */
         fieldsElem.innerHTML = ""
         rowsElem.innerHTML = ""
@@ -37,68 +16,49 @@ $(document).ready(function() {
         infoElem.innerText = ""
     }
 
-
     /* Adds the recieved data to output */
-    function parseDataToDom(data,type)
-    {
+    function parseDataToDom(data, type) {
         /* Emptying fields before appending */
         clearCard()
 
-        if(type == 'all_data')
+        if (type === 'all_data')
             createPivottable(data)
-        else
-        {   //Data
+        else {   // Data
             let rows = JSON.parse(data.rows)
             let fields = JSON.parse(data.fields)
 
-            if(type == 'filter')
+            if (type === 'filter')
                 infoElem.innerText = "Count:-" + rows.length
-            for(let field in fields)
-            {
+            for (let field in fields) {
                 fieldsElem.innerHTML += `<th scope="col">${fields[field].name}</th>`
             }
-            for(let row in rows)
-            {
+            for (let row in rows) {
                 let trTag = "<tr>"
-                for(let col in rows[row])
-                {
-                    trTag+="<td>"+ rows[row][col] +"</td>"
+                for (let col in rows[row]) {
+                    trTag += "<td>" + rows[row][col] + "</td>"
                 }
-                trTag+="</tr>"
-                rowsElem.innerHTML+=trTag
+                trTag += "</tr>"
+                rowsElem.innerHTML += trTag
             }
         }
     }
-    function noDataToDom(data)
-    {
+
+    function noDataToDom(data) {
         clearCard()
         output.innerText = data
     }
-    // Fetching data
-    function getData(reqBody)
-    {
+
+    function getAndShowData(reqBody) {
         clearCard()
-        info.innerText = "Loading..."
-        console.log(reqBody)
+        getData(reqBody,"/analytics/getData",(data)=>{
+            console.log(data)
+            if(data.error)
+                noDataToDom(data.error)
+            else
+                parseDataToDom(data,reqBody.type)
+        })
 
-        let init ={
-            method:"POST",
-            headers: { 'Content-Type': 'application/json' },
-            body:JSON.stringify(reqBody)
-        }
-        fetch("/analytics/getData",init)
-            .then((res)=>{
-              return res.json()
-            }).then((data)=>{
-                if(data.error)
-                    noDataToDom(data.error)
-                else
-                    parseDataToDom(data,reqBody.type)
-            })
     }
-
-
-
 
     let elements = document.getElementsByClassName('dropdown-item')
 
@@ -106,8 +66,8 @@ $(document).ready(function() {
     Array.from(elements).forEach((element) => {
         element.addEventListener('click', (event) => {
             let queryType = element.getAttribute("query_type")
-
-            if(queryType == "filter")
+            /* For filter type we need to add input fields to DOM */
+            if(queryType === "filter")
             {
                 let outputDiv = document.getElementById('output')
                 clearCard()
@@ -124,17 +84,17 @@ $(document).ready(function() {
                         type:queryType,
                         input:outputDiv.getElementsByTagName('input')[0].value
                     }
-                    getData(reqBody)
+                    getAndShowData(reqBody)
                  })
             }
-            else
+            else /* Else we send the reqBody */
             {
                 let reqBody ={
                     usecase_id:element.getAttribute("usecase_id"),
                     title:element.innerText,
                     type:queryType
                 }
-                getData(reqBody)
+                getAndShowData(reqBody)
             }
         })
     })
