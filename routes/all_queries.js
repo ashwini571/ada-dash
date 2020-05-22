@@ -22,7 +22,6 @@ router.get('/:id', (req, res )=> {
         res.render('templates/all_queries', { title:"All Queries", clusterName:clusterName,result:row })
 
     })
-
 })
 
 

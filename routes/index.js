@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const sqliteDb = require('../src/utils/sqlite_connect')
-
+const redshift = require('../src/utils/redshift_connect')
+const clusterName = redshift.clusterName
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -12,15 +13,16 @@ router.get('/', (req, res, next)=>{
 
   let sql = `SELECT id,title FROM analytics_cases`;
   sqliteDb.all(sql,(err,rows)=>{
-    res.render('templates/index',{error:err, result:rows, title:'Home'})
+    res.render('templates/index',{error:err, result:rows, title:'Home',clusterName:clusterName})
   })
 
 })
 
 /* GET Adding Use cases */
 router.get('/add',(req,res)=>{
-  res.render('templates/add_usecase',{title:'Add'})
+  res.render('templates/add_usecase',{title:'Add Usecase'})
 })
+
 /* POST Adding Use cases */
 router.post('/add',urlencodedParser,(req,res)=>{
 
@@ -29,11 +31,13 @@ router.post('/add',urlencodedParser,(req,res)=>{
   sqliteDb.run(sql,[],(err)=>{
     console.log(err)
     if(err)
-      res.render('templates/add_usecase',{title:'Add', error:err})
-    else
-      res.render('templates/add_usecase',{title:'Add', msg:"Added Successfully"})
+      res.render('templates/add_usecase',{title:'Add Usecase', error:err})
+    else {
+      /* Calling the Add_query function */
+      req.params.id = req.body.id
+      res.render('templates/add_query', {title: 'Add Query', msg: "Created Successfully", usecase_id: req.body.id})
+    }
   })
-
 
 })
 

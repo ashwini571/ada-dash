@@ -23,7 +23,7 @@
                         <div id="collapse{{id}}" class="collapse" aria-labelledby="heading{{id}}" data-parent="#accordionExample">
                             <div class="card-body">
 
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" id="{{id}}" usecase_id={{usecase_id}}>
                                     <div class="form-group">
                                         <label for="name" class="col-sm-2 control-label">Type</label>
                                         <div class="col-sm-10">
@@ -52,6 +52,7 @@
                                             <button type="submit" class="btn btn-outline-secondary" id="save{{id}}" hidden>Save</button>
                                         </div>
                                     </div>
+                                    <input type="hidden" name="id{{id}}" value="{{id}}">
                                 </form>
 
                             </div>
@@ -62,20 +63,9 @@
             </div>
 
         </div>
-
     {{/inline}}
     {{#*inline "scripts-block" }}
-        <script>
-            function handleEdit(id) {
-                document.getElementById('type'+id).disabled = false;
-                document.getElementById('title'+id).disabled = false;
-                document.getElementById('query'+id).disabled = false;
-                document.getElementById('edit'+id).hidden = true;
-                document.getElementById('save'+id).hidden = false;
-
-                return false;
-            }
-        </script>
+        <script src="/public/js/all_queries_client.js"></script>
     {{/inline}}
 {{/base}}
 

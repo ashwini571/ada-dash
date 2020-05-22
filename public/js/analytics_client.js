@@ -1,5 +1,12 @@
 $(document).ready(function() {
 
+    // Data Targets
+    let fieldsElem = document.getElementById('fields')
+    let rowsElem= document.getElementById('rows')
+    let pivotOutput = document.getElementById('output')
+    let infoElem = document.getElementById('info')
+    let output = document.getElementById('output')
+
     // Pivottable
     function createPivottable(data)
     {
@@ -23,31 +30,29 @@ $(document).ready(function() {
     /* Used to clear the output area*/
     function clearCard()
     {
-        let fieldsElem = document.getElementById('fields')
-        let rowsElem= document.getElementById('rows')
-        let pivotOutput = document.getElementById('output')
-
         /* Emptying fields */
         fieldsElem.innerHTML = ""
         rowsElem.innerHTML = ""
         pivotOutput.innerHTML = ""
+        infoElem.innerText = ""
     }
+
+
     /* Adds the recieved data to output */
     function parseDataToDom(data,type)
     {
+        /* Emptying fields before appending */
+        clearCard()
+
         if(type == 'all_data')
             createPivottable(data)
         else
         {   //Data
             let rows = JSON.parse(data.rows)
             let fields = JSON.parse(data.fields)
-            //Data Target
-            let fieldsElem = document.getElementById('fields')
-            let rowsElem= document.getElementById('rows')
-            let pivotOutput = document.getElementById('output')
 
-            /* Emptying fields before appending */
-            clearCard()
+            if(type == 'filter')
+                infoElem.innerText = "Count:-" + rows.length
             for(let field in fields)
             {
                 fieldsElem.innerHTML += `<th scope="col">${fields[field].name}</th>`
@@ -66,13 +71,16 @@ $(document).ready(function() {
     }
     function noDataToDom(data)
     {
-        let output = document.getElementById('output')
+        clearCard()
         output.innerText = data
     }
     // Fetching data
     function getData(reqBody)
     {
+        clearCard()
+        info.innerText = "Loading..."
         console.log(reqBody)
+
         let init ={
             method:"POST",
             headers: { 'Content-Type': 'application/json' },
@@ -92,7 +100,7 @@ $(document).ready(function() {
 
 
 
-    var elements = document.getElementsByClassName('dropdown-item');
+    let elements = document.getElementsByClassName('dropdown-item')
 
     /*Event-listener for dropdown items*/
     Array.from(elements).forEach((element) => {
@@ -128,8 +136,8 @@ $(document).ready(function() {
                 }
                 getData(reqBody)
             }
-        });
-    });
+        })
+    })
 
 
 })
