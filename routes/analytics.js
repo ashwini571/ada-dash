@@ -10,26 +10,47 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
 
+/* Utility function for extracting words enclosed under {} */
+const extractVar = (row)=>{
+    row.forEach((element)=>{
+        let inputVar = element.query.match(/{[\w]+}/g)
+        if(inputVar != null) {
+            /* Removing { and } from the string */
+            for(let e in inputVar)
+                inputVar[e] = inputVar[e].slice(1,-1)
+            element.inputVar = inputVar
+        }
+        else
+            element.inputVar = []
+    })
+}
+/*Inserting user input values to SQL query for filtering */
+const userInputToQuery = (query,input)=>{
+
+    for(let obj in input)
+    {
+       query = query.replace("{"+input[obj].nameOfInput+"}",input[obj].valueOfInput)
+    }
+    return query
+}
 /* GET  Shows Options For Different Types of Query at Analytics Page */
 router.get('/:id', (req, res, )=> {
-
     /* fetching all cases from sqlite */
-    let sql = `SELECT ac.id, ac.title as usecase_title, aq.title as query_title, aq.type FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
+    let sql = `SELECT ac.id, ac.title as usecase_title, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
     sqliteDb.all(sql,[],(err,row)=>{
-        /* row.length==0 so that it doesn't catch error in  row[0].title*/
-
-        if(err || row.length==0)
-            return res.render('templates/analytics',{title:"Error",error:"Error querying Sqlite"})
-
-        res.render('templates/analytics', { title:row[0].usecase_title, clusterName:clusterName,result:row })
-
+        /* row.length==0 so that it doesn't catch error in  row[0].usecase_title*/
+        if (err || row.length === 0) {
+            return res.render('templates/analytics', {title: "Error", error: "Error querying Sqlite"})
+        } else {
+            /*Extracting variables from query enclosed under "{ }" */
+            extractVar(row)
+            res.render('templates/analytics', {title: row[0].usecase_title, clusterName: clusterName, result: row})
+        }
     })
-
 })
 
 /* POST  Getting data according to the type of query selected */
 router.post('/getData', urlencodedParser, (req,res)=>{
-
     let usecase_id = req.body.usecase_id
     let title = req.body.title
     let type = req.body.type
@@ -40,26 +61,24 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     sqliteDb.get(sql,[],(err,row)=>{
         if(err)
             res.send({error:"Something went wrong!"})
-        else if(row==undefined)
+        else if(row===undefined)
             res.send({error:"No data found"})
         else
         {
-            let queryForRedshift = row.query
+            let queryRedshift = row.query
             /* Adding User input to the query */
-            if(type == 'filter')
-                queryForRedshift = queryForRedshift.replace("$input",input)
-            console.log(queryForRedshift)
+            if(type === 'filter')
+                queryRedshift = userInputToQuery(queryRedshift,input)
+            console.log(queryRedshift)
 
-            redshiftClient.query(queryForRedshift, (error,result)=>{
-                console.log(result)
+            redshiftClient.query(queryRedshift, (error,result)=>{
                 if(error)
                     res.send({error:"Something went wrong"})
-               else if(result.rows.length==0)
+               else if(result.rows.length===0)
                    res.send({error:"No data found"})
                else
                    res.send({rows:JSON.stringify(result.rows), fields:JSON.stringify(result.fields)})
             })
-
         }
     })
 })

@@ -50,6 +50,7 @@ $(document).ready(function() {
 
     function getAndShowData(reqBody) {
         clearCard()
+        /*getData function is in utils_client.js */
         getData(reqBody,"/analytics/getData",(data)=>{
             console.log(data)
             if(data.error)
@@ -57,7 +58,12 @@ $(document).ready(function() {
             else
                 parseDataToDom(data,reqBody.type)
         })
-
+    }
+    function appendInputElem(inputVar)
+    {
+        for(let e in inputVar)
+            output.innerHTML += `<input type="text" placeholder=${inputVar[e]}>`
+        output.innerHTML += `<button type="button" id="query_button">Search</button>`
     }
 
     let elements = document.getElementsByClassName('dropdown-item')
@@ -69,20 +75,29 @@ $(document).ready(function() {
             /* For filter type we need to add input fields to DOM */
             if(queryType === "filter")
             {
-                let outputDiv = document.getElementById('output')
+                /* Getting names of all input fields required */
+                let inputVar = element.getAttribute('inputVar').split(',')
                 clearCard()
-                /* Adding Input field to DOM  */
-                outputDiv.innerHTML = "<input type=\"text\" id=\"query_value\" name=\"query_value\">"
-                outputDiv.innerHTML += "<button type=\"button\" id=\"query_button\">Search</button>"
-
+                /* Adding Input field to DOM */
+                appendInputElem(inputVar)
+                /*Listening for input submission */
                 let submitButton = document.getElementById('query_button')
-
                 submitButton.addEventListener('click',(event)=>{
-                    let reqBody ={
+                    let inputTags = output.getElementsByTagName('input')
+                    let input = []
+
+                    for(let idx=0;idx<inputTags.length;idx++)
+                    {
+                        let nameOfInput = inputTags[idx].getAttribute('placeholder')
+                        let valueOfInput = inputTags[idx].value
+                        input.push({nameOfInput,valueOfInput})
+                    }
+                    console.log(input)
+                    let reqBody = {
                         usecase_id:element.getAttribute("usecase_id"),
                         title:element.innerText,
                         type:queryType,
-                        input:outputDiv.getElementsByTagName('input')[0].value
+                        input:input
                     }
                     getAndShowData(reqBody)
                  })
@@ -98,6 +113,4 @@ $(document).ready(function() {
             }
         })
     })
-
-
 })
