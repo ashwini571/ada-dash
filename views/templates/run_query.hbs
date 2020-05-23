@@ -1,0 +1,43 @@
+{{#> base  }}
+    {{#*inline "head-block" }}
+        <link rel="stylesheet" href="/public/js/pivottable/dist/pivot.css">
+    {{/inline}}
+
+    {{#*inline "body-block" }}
+        <div class="container">
+            <br><br><br>
+            <h5>Query:</h5>
+            <div class="row" style="width: auto">
+                <form method="post">
+                    <textarea type="text" name="query" class="form-control"  rows=5 cols=100 id="query" required></textarea>
+                    <br>
+                    <button class="btn btn-md btn-primary" id="run_query" data-toggle="tooltip" data-placement="right" title="Ctrl+Enter" >Run</button>
+                </form>
+            </div>
+
+        <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
+
+            <h5>Output:</h5>
+            <div class="row card" style="height: 700px;background-color:oldlace;padding:10px;width:auto">
+                <h5 id="info"></h5>
+                <div class="table-responsive"  style="height:auto;max-height: 700px;max-width:1200px">
+                    <div id="output">
+
+                    </div>
+                </div>
+            </div>
+            <hr class="style-five">
+        </div>
+    {{/inline}}
+
+    {{#*inline "scripts-block"}}
+        <!-- jquerui is a dependency for using pivotui function -->
+        <script src="/static/jqueryui/jquery-ui.js"></script>
+        <script src="/public/js/pivottable/dist/pivot.js"></script>
+        <!-- Custom Js -->
+        <script src="/public/js/utils_client.js"></script>
+        <script src="/public/js/run_query_client.js"></script>
+       
+    {{/inline}}
+
+{{/base}}

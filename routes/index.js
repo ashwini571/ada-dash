@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const sqliteDb = require('../src/utils/sqlite_connect')
 const redshift = require('../src/utils/redshift_connect')
+const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
@@ -18,9 +19,9 @@ router.get('/', (req, res, next)=>{
 
 })
 
-/* GET Adding Use cases */
+/* GET Form for adding  usecase */
 router.get('/add',(req,res)=>{
-  res.render('templates/add_usecase',{title:'Add Usecase'})
+  res.render('templates/add_usecase',{title:'Add Usecase', clusterName:clusterName})
 })
 
 /* POST Adding Use cases */
@@ -45,6 +46,7 @@ router.get('/redshift_config', (req,res)=>{
   res.render('templates/edit_redshift_config',{title:'Redshift Config.'})
 })
 
+/*GET Search for usecases */
 router.get('/search', (req,res)=>{
 
   let sql = `SELECT * FROM analytics_cases WHERE title LIKE '%${req.query.key}%' OR id LIKE '${req.query.key}' `
@@ -55,5 +57,23 @@ router.get('/search', (req,res)=>{
   })
 })
 
+router.get('/run_query', (req,res)=>{
+    res.render('templates/run_query',{title:'Run', clusterName:clusterName})
+})
+
+router.post('/run_query', urlencodedParser, (req,res)=>{
+
+  let query = req.body.query
+  console.log(query)
+  redshiftClient.query(query, (error,result)=>{
+    console.log(error)
+    if(error)
+      res.send({error:"Something went wrong"})
+    else if(result.rows.length==0)
+      res.send({error:"No data found"})
+    else
+      res.send({rows:JSON.stringify(result.rows), fields:JSON.stringify(result.fields)})
+  })
+})
 
 module.exports = router
