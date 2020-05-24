@@ -21,26 +21,12 @@ $(document).ready(function() {
         /* Emptying fields before appending */
         clearCard()
 
-        if (type === 'all_data')
-            createPivottable(data)
-        else {   // Data
+        if (type === 'count/percent') {
             let rows = JSON.parse(data.rows)
-            let fields = JSON.parse(data.fields)
-
-            if (type === 'filter')
-                infoElem.innerText = "Count:-" + rows.length
-            for (let field in fields) {
-                fieldsElem.innerHTML += `<th scope="col">${fields[field].name}</th>`
-            }
-            for (let row in rows) {
-                let trTag = "<tr>"
-                for (let col in rows[row]) {
-                    trTag += "<td>" + rows[row][col] + "</td>"
-                }
-                trTag += "</tr>"
-                rowsElem.innerHTML += trTag
-            }
+            infoElem.innerText = "Count:-" + rows[0].count
         }
+        else
+            createPivottable(data)
     }
 
     function noDataToDom(data) {
@@ -94,8 +80,8 @@ $(document).ready(function() {
                     }
                     console.log(input)
                     let reqBody = {
-                        usecase_id:element.getAttribute("usecase_id"),
-                        title:element.innerText,
+                        id:element.id,
+                        usecase_id:element.getAttribute('usecase_id'),
                         type:queryType,
                         input:input
                     }
@@ -105,8 +91,8 @@ $(document).ready(function() {
             else /* Else we send the reqBody */
             {
                 let reqBody ={
-                    usecase_id:element.getAttribute("usecase_id"),
-                    title:element.innerText,
+                    id:element.id,
+                    usecase_id:element.getAttribute('usecase_id'),
                     type:queryType
                 }
                 getAndShowData(reqBody)

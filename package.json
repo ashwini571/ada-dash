@@ -18,6 +18,7 @@
     "jquery": "^3.5.1",
     "jqueryui": "^1.11.1",
     "morgan": "~1.9.1",
+    "node-cache": "^5.1.0",
     "node-redshift": "^0.1.5",
     "nodemon": "^2.0.3",
     "pivottable": "^2.23.0",

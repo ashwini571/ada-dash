@@ -36,7 +36,7 @@ const userInputToQuery = (query,input)=>{
 /* GET  Shows Options For Different Types of Query at Analytics Page */
 router.get('/:id', (req, res, )=> {
     /* fetching all cases from sqlite */
-    let sql = `SELECT ac.id, ac.title as usecase_title, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
+    let sql = `SELECT aq.id, ac.title as usecase_title, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].usecase_title*/
         if (err || row.length === 0) {
@@ -51,13 +51,12 @@ router.get('/:id', (req, res, )=> {
 
 /* POST  Getting data according to the type of query selected */
 router.post('/getData', urlencodedParser, (req,res)=>{
-    let usecase_id = req.body.usecase_id
-    let title = req.body.title
+    let id = req.body.id
     let type = req.body.type
     let input = req.body.input
     console.log(req.body)
     /* brings redshift query from sqlite */
-    let sql = `SELECT query,last_fetched FROM all_queries WHERE usecase_id='${usecase_id}' AND title='${title}'`
+    let sql = `SELECT id,query,last_fetched FROM all_queries WHERE id='${id}'`
     sqliteDb.get(sql,[],(err,row)=>{
         if(err)
             res.send({error:"Something went wrong!"})
@@ -74,10 +73,10 @@ router.post('/getData', urlencodedParser, (req,res)=>{
             redshiftClient.query(queryRedshift, (error,result)=>{
                 if(error)
                     res.send({error:"Something went wrong"})
-               else if(result.rows.length===0)
-                   res.send({error:"No data found"})
-               else
-                   res.send({rows:JSON.stringify(result.rows), fields:JSON.stringify(result.fields)})
+                else if(result.rows.length===0)
+                    res.send({error:"No data found"})
+                else
+                    res.send({rows:JSON.stringify(result.rows), fields:JSON.stringify(result.fields)})
             })
         }
     })
