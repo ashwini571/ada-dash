@@ -2,6 +2,9 @@ const express = require('express')
 const router = express.Router()
 const redshift = require('../src/utils/redshift_connect')
 const sqliteDb = require('../src/utils/sqlite_connect')
+/* Data-Caching */
+const nodeCache = require('node-cache')
+const myCache = new nodeCache()
 
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
@@ -36,7 +39,7 @@ const userInputToQuery = (query,input)=>{
 /* GET  Shows Options For Different Types of Query at Analytics Page */
 router.get('/:id', (req, res, )=> {
     /* fetching all cases from sqlite */
-    let sql = `SELECT aq.id, ac.title as usecase_title, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
+    let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].usecase_title*/
         if (err || row.length === 0) {
@@ -52,6 +55,7 @@ router.get('/:id', (req, res, )=> {
 /* POST  Getting data according to the type of query selected */
 router.post('/getData', urlencodedParser, (req,res)=>{
     let id = req.body.id
+    let usecase_id = req.body.usecase_id
     let type = req.body.type
     let input = req.body.input
     console.log(req.body)
@@ -65,19 +69,28 @@ router.post('/getData', urlencodedParser, (req,res)=>{
         else
         {
             let queryRedshift = row.query
+            let key = usecase_id+"_"+id
             /* Adding User input to the query */
             if(type === 'filter')
                 queryRedshift = userInputToQuery(queryRedshift,input)
-            console.log(queryRedshift)
 
-            redshiftClient.query(queryRedshift, (error,result)=>{
-                if(error)
-                    res.send({error:"Something went wrong"})
-                else if(result.rows.length===0)
-                    res.send({error:"No data found"})
-                else
-                    res.send({rows:JSON.stringify(result.rows), fields:JSON.stringify(result.fields)})
-            })
+            let cachedData = myCache.get(key)
+            if(cachedData == undefined) {
+                redshiftClient.query(queryRedshift, (error,result)=>{
+                    if(error)
+                        res.send({error:"Something went wrong"})
+                    else if(result.rows.length===0)
+                        res.send({error:"No data found"})
+                    else {
+                        myCache.set(key,result.rows,10)
+                        res.send({rows: JSON.stringify(result.rows)})
+                    }
+                })
+            }
+            else{
+                res.send({rows:JSON.stringify(cachedData)})
+            }
+
         }
     })
 })

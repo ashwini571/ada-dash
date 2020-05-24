@@ -38,15 +38,13 @@ $(document).ready(function() {
         clearCard()
         /*getData function is in utils_client.js */
         getData(reqBody,"/analytics/getData",(data)=>{
-            console.log(data)
             if(data.error)
                 noDataToDom(data.error)
             else
                 parseDataToDom(data,reqBody.type)
         })
     }
-    function appendInputElem(inputVar)
-    {
+    function appendInputElem(inputVar) {
         for(let e in inputVar)
             output.innerHTML += `<input type="text" placeholder=${inputVar[e]}>`
         output.innerHTML += `<button type="button" id="query_button">Search</button>`

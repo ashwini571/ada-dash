@@ -27,8 +27,7 @@ router.get('/add',(req,res)=>{
 /* POST Adding Use cases */
 router.post('/add',urlencodedParser,(req,res)=>{
 
-  let sql = `INSERT INTO analytics_cases(id,title) VALUES("${req.body.id}","${req.body.title}")`
-
+  let sql = `INSERT INTO analytics_cases(id,title,time_period) VALUES("${req.body.id}","${req.body.title}","${req.body.time_period}")`
   sqliteDb.run(sql,[],(err)=>{
     console.log(err)
     if(err)
@@ -39,7 +38,6 @@ router.post('/add',urlencodedParser,(req,res)=>{
       res.render('templates/add_query', {title: 'Add Query', msg: "Created Successfully", usecase_id: req.body.id})
     }
   })
-
 })
 
 router.get('/redshift_config', (req,res)=>{
