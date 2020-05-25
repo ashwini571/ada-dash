@@ -28,7 +28,8 @@
                                         <label for="name" class="col-sm-2 control-label">Type</label>
                                         <div class="col-sm-10">
                                             <select class="form-control" name="" id="type{{id}}" value="{{type}}" disabled>
-                                                <option value="count/percent" {{#ifCond type '==' "count/percent" }}selected{{/ifCond}}>count/percent</option>
+                                                <option value="count" {{#ifCond type '==' "count" }}selected{{/ifCond}}>count</option>
+                                                <option value="percent" {{#ifCond type '==' "percent" }}selected{{/ifCond}}>percent</option>
                                                 <option value="filter" {{#ifCond type '===' "filter" }}selected{{/ifCond}}>filter</option>
                                                 <option value="all_data" {{#ifCond type '===' "all_data" }}selected{{/ifCond}}>all_data</option>
                                             </select>

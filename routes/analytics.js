@@ -30,16 +30,16 @@ const extractVar = (row)=>{
 /*Inserting user input values to SQL query for filtering */
 const userInputToQuery = (query,input)=>{
 
-    for(let obj in input)
-    {
+    for(let obj in input) {
        query = query.replace("{"+input[obj].nameOfInput+"}",input[obj].valueOfInput)
     }
     return query
 }
+
 /* GET  Shows Options For Different Types of Query at Analytics Page */
 router.get('/:id', (req, res, )=> {
     /* fetching all cases from sqlite */
-    let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
+    let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.time_period, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].usecase_title*/
         if (err || row.length === 0) {
@@ -58,6 +58,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     let usecase_id = req.body.usecase_id
     let type = req.body.type
     let input = req.body.input
+    let timePeriod = req.body.timePeriod
     console.log(req.body)
     /* brings redshift query from sqlite */
     let sql = `SELECT id,query,last_fetched FROM all_queries WHERE id='${id}'`
@@ -66,8 +67,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
             res.send({error:"Something went wrong!"})
         else if(row===undefined)
             res.send({error:"No data found"})
-        else
-        {
+        else {
             let queryRedshift = row.query
             let key = usecase_id+"_"+id
             /* Adding User input to the query */
@@ -82,15 +82,16 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                     else if(result.rows.length===0)
                         res.send({error:"No data found"})
                     else {
-                        myCache.set(key,result.rows,10)
+                        console.log("from_redshift")
+                        myCache.set(key,result.rows,86400*timePeriod)
                         res.send({rows: JSON.stringify(result.rows)})
                     }
                 })
             }
             else{
-                res.send({rows:JSON.stringify(cachedData)})
+                console.log("from_cache")
+                res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched})
             }
-
         }
     })
 })

@@ -21,7 +21,7 @@ $(document).ready(function() {
         /* Emptying fields before appending */
         clearCard()
 
-        if (type === 'count/percent') {
+        if (type === 'count') {
             let rows = JSON.parse(data.rows)
             infoElem.innerText = "Count:-" + rows[0].count
         }
@@ -88,10 +88,12 @@ $(document).ready(function() {
             }
             else /* Else we send the reqBody */
             {
+                let timePeriod = document.getElementById('time_period').getAttribute('time_period')
                 let reqBody ={
                     id:element.id,
                     usecase_id:element.getAttribute('usecase_id'),
-                    type:queryType
+                    type:queryType,
+                    timePeriod:timePeriod
                 }
                 getAndShowData(reqBody)
             }
