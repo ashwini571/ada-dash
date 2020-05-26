@@ -10,6 +10,15 @@
                         <div class="card-body">
 
                             <ol>
+                                <li class="text-muted" style="margin-bottom:10px;">
+                                    Add $timePeriod in the query with the timestamp column of your table
+                                    <br>
+                                        Ex:-
+                                        <br>
+                                        SELECT col, timestamp 'epoch'+timestamp/1000*INTERVAL'1 second' as download_time from table_name
+                                    WHERE download_time> getdate()- <b>$timePeriod</b>
+
+                                </li>
                                 <li class="text-muted" style="margin-bottom:10px;"><b>For Filter Type Queries :-</b></li>
                                 <li class="text-muted" style="margin-bottom:10px;">In place of variable name in where and like clause,
                                     use following:-
@@ -19,7 +28,7 @@
                                 <li class="text-muted" style="margin-bottom:10px;">Only alphanumeric chars and underscore are allowed</li>
                                 <li class="text-muted" style="margin-bottom:10px;">
                                     <b>Ex:- <br>
-                                        SELECT store_id,timestamp FROM reports WHERE store_id='{store_id}' and timestamp>getdate()-{past_days}
+                                        SELECT store_id,timestamp FROM reports WHERE store_id='{store_id}'
                                     </b>
                                 </li>
 

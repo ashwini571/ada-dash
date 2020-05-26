@@ -2,6 +2,7 @@
 
     {{#*inline "head-block" }}
         <link rel="stylesheet" href="/public/js/pivottable/dist/pivot.css">
+        <link rel="stylesheet" href="/public/css/styles.css">
     {{/inline}}
 
     {{#*inline "body-block" }}
@@ -9,7 +10,24 @@
         <div class="container" >
             <br><br>
             <div class="row">
-                <h3 style="font-family: 'Hammersmith One', sans-serif;	border-left:5px solid black;padding-left: 10px" id="time_period" time_period="{{result.0.time_period}}"> {{title}}</h3>
+                <div class="col-10" >
+                    <h3 style="font-family: 'Hammersmith One', sans-serif;	border-left:5px solid #000000;padding-left: 10px">
+                        {{title}}
+                        in last
+                        <input  style="width: 85px" list="periods" name="period" id="period" value="{{result.0.time_period}}">
+                        <datalist id="periods">
+                            <!-- Options appended by javascript -->
+                        </datalist>
+                        days
+                    </h3>
+                </div>
+
+                <div class="col-2">
+                    <div class="flex" style="float: right;">
+                        <a href="/all_queries/{{result.0.usecase_id}}" class="bttn">Configure</a>
+                    </div>
+                </div>
+
             </div>
             <br>
         </div>
@@ -32,14 +50,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <a class="btn btn-secondary" href="/all_queries/{{result.0.usecase_id}}"  style="float:right">See All Queries</a>
-                </div>
             </div>
             <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
-            <h5>Output:<a href="">(Refresh)</a></h5>
+            <h5>Output:</h5>
             <div class="row card" style="height: 700px;background-color:oldlace;padding:10px;width:auto">
-<!--                <h6 style=""><span>Last-fetched:-</span></h6>-->
+
                 <h5 id="info"></h5>
                 <div class="table-responsive"  style="height:auto;max-height: 700px;max-width:1200px">
                     <table class="table">
@@ -80,6 +95,7 @@
         <!-- Custom Scripts -->
         <script src="/public/js/utils_client.js"></script>
         <script src="/public/js/analytics_client.js"></script>
+        <script src="/public/js/custom.js"></script>
 
     {{/inline}}
 

@@ -77,18 +77,19 @@ $(document).ready(function() {
                         input.push({nameOfInput,valueOfInput})
                     }
                     console.log(input)
+                    let timePeriod = document.getElementById('period').value
                     let reqBody = {
                         id:element.id,
                         usecase_id:element.getAttribute('usecase_id'),
-                        type:queryType,
-                        input:input
+                        input:input,
+                        timePeriod:timePeriod
                     }
                     getAndShowData(reqBody)
                  })
             }
             else /* Else we send the reqBody */
             {
-                let timePeriod = document.getElementById('time_period').getAttribute('time_period')
+                let timePeriod = document.getElementById('period').value
                 let reqBody ={
                     id:element.id,
                     usecase_id:element.getAttribute('usecase_id'),

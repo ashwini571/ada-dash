@@ -54,26 +54,27 @@ router.get('/:id', (req, res, )=> {
 
 /* POST  Getting data according to the type of query selected */
 router.post('/getData', urlencodedParser, (req,res)=>{
+    /* getting data from request body */
     let id = req.body.id
     let usecase_id = req.body.usecase_id
-    let type = req.body.type
     let input = req.body.input
-    let timePeriod = req.body.timePeriod
-    console.log(req.body)
+    let timePeriod = Number(req.body.timePeriod)
+    console.log(timePeriod)
+
     /* brings redshift query from sqlite */
-    let sql = `SELECT id,query,last_fetched FROM all_queries WHERE id='${id}'`
+    let sql = `SELECT * FROM all_queries WHERE id='${id}'`
     sqliteDb.get(sql,[],(err,row)=>{
-        if(err)
+        if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
             res.send({error:"Something went wrong!"})
         else if(row===undefined)
             res.send({error:"No data found"})
         else {
             let queryRedshift = row.query
-            let key = usecase_id+"_"+id
+            let key = usecase_id+"_"+id+"_"+timePeriod
             /* Adding User input to the query */
-            if(type === 'filter')
+            if(row.type === 'filter')
                 queryRedshift = userInputToQuery(queryRedshift,input)
-
+            queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
             let cachedData = myCache.get(key)
             if(cachedData == undefined) {
                 redshiftClient.query(queryRedshift, (error,result)=>{
