@@ -11,26 +11,29 @@
 
                             <ol>
                                 <li class="text-muted" style="margin-bottom:10px;">
-                                    Add $timePeriod in the query with the timestamp column of your table
-                                    <br>
+                                    To  make query output vary with user input days, add <b>$timePeriod</b> with timestamp field.$timePeriod
+                                        will then be replaced by user input at runtime.
+                                    <br><br>
                                         Ex:-
                                         <br>
-                                        SELECT col, timestamp 'epoch'+timestamp/1000*INTERVAL'1 second' as download_time from table_name
+                                        SELECT id, timestamp  as download_time from table_name
                                     WHERE download_time> getdate()- <b>$timePeriod</b>
 
                                 </li>
                                 <li class="text-muted" style="margin-bottom:10px;"><b>For Filter Type Queries :-</b></li>
-                                <li class="text-muted" style="margin-bottom:10px;">In place of variable name in where and like clause,
-                                    use following:-
-                                    <br>
-                                    {variable_name}
-                                </li>
-                                <li class="text-muted" style="margin-bottom:10px;">Only alphanumeric chars and underscore are allowed</li>
-                                <li class="text-muted" style="margin-bottom:10px;">
-                                    <b>Ex:- <br>
-                                        SELECT store_id,timestamp FROM reports WHERE store_id='{store_id}'
-                                    </b>
-                                </li>
+                                    <ol type="i">
+                                        <li class="text-muted" style="margin-bottom:10px;">In place of variable name in where and like clause,
+                                            use following:-
+                                            <br>
+                                            {variable-name}
+                                        </li>
+                                        <li class="text-muted" style="margin-bottom:10px;">Only alphanumeric chars and underscore are allowed</li>
+                                        <li class="text-muted" style="margin-bottom:10px;">
+                                            <b>Ex:- <br>
+                                                SELECT store_id,timestamp FROM reports WHERE store_id='{store_id}'
+                                            </b>
+                                        </li>
+                                    </ol>
 
                             </ol>
                         </div>
@@ -42,20 +45,20 @@
                             <div class="text-center" style="padding-top:28px ">
                                 <h1 class="h3 mb-3 font-weight-normal">Add query for usecase_id :- {{usecase_id}}</h1>
                             </div>
-                            <label>Type* :</label>
+                            <label class="text-muted">Type* :</label>
                             <select class="form-control" name="type" id="type" required>
                                 <option value="count" >count</option>
                                 <option value="percent" >percent</option>
                                 <option value="filter" >filter</option>
                                 <option value="all_data">all_data</option>
                             </select><br>
-                            <label >Title* :</label>
+                            <label class="text-muted">Title* :</label>
                             <input type="text" name="title" class="form-control -p3" id="title" required><br>
-                            <label>Query* :<a href="/run_query">(Test query before deploying)</a></label>
+                            <label class="text-muted">Query* :<a href="/run_query">(Test query before deploying)</a></label>
                             <textarea type="text" name="query" class="form-control -p3" id="text" rows=5 required></textarea>
                             <br>
-                            <label>Help:</label>
-                            <textarea type="text" name="help" class="form-control -p3" id="help" rows=3 ></textarea>
+                            <label class="text-muted">Description(Optional):</label>
+                            <textarea type="text" name="description" class="form-control -p3" id="help" rows=3 ></textarea>
                             <br>
                             <button class="btn btn-md btn-primary" type="submit">Submit</button>
 

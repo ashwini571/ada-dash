@@ -10,10 +10,10 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
 
-router.get('/:id', (req, res )=> {
+router.get('/:usecase_id', (req, res )=> {
 
     /* fetching all cases from sqlite */
-    let sql = `SELECT * FROM all_queries WHERE usecase_id = '${req.params.id}' `
+    let sql = `SELECT * FROM all_queries WHERE usecase_id = '${req.params.usecase_id}' `
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
         if(err || row.length==0)

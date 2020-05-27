@@ -37,17 +37,22 @@ const userInputToQuery = (query,input)=>{
 }
 
 /* GET  Shows Options For Different Types of Query at Analytics Page */
-router.get('/:id', (req, res, )=> {
+router.get('/:usecase_id', (req, res, )=> {
     /* fetching all cases from sqlite */
-    let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.time_period, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.id}" AND aq.usecase_id="${req.params.id}" `
+    let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,
+    aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.usecase_id}" AND aq.usecase_id="${req.params.usecase_id}" `
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].usecase_title*/
-        if (err || row.length === 0) {
-            return res.render('templates/analytics', {title: "Error", error: "Error querying Sqlite"})
-        } else {
+        if (err) {
+            res.render('templates/analytics', {title: "Error", error: "Error querying Sqlite",id:req.params.usecase_id})
+        }
+        else if(row.length === 0){
+            res.render('templates/analytics', {error: "No queries found",id:req.params.usecase_id})
+        }
+        else{
             /*Extracting variables from query enclosed under "{ }" */
             extractVar(row)
-            res.render('templates/analytics', {title: row[0].usecase_title, clusterName: clusterName, result: row})
+            res.render('templates/analytics', {title: row[0].usecase_title, clusterName: clusterName, result: row, id:req.params.usecase_id})
         }
     })
 })
@@ -59,11 +64,11 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     let usecase_id = req.body.usecase_id
     let input = req.body.input
     let timePeriod = Number(req.body.timePeriod)
-    console.log(timePeriod)
 
     /* brings redshift query from sqlite */
     let sql = `SELECT * FROM all_queries WHERE id='${id}'`
     sqliteDb.get(sql,[],(err,row)=>{
+
         if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
             res.send({error:"Something went wrong!"})
         else if(row===undefined)
@@ -74,9 +79,12 @@ router.post('/getData', urlencodedParser, (req,res)=>{
             /* Adding User input to the query */
             if(row.type === 'filter')
                 queryRedshift = userInputToQuery(queryRedshift,input)
+
             queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
             let cachedData = myCache.get(key)
+
             if(cachedData == undefined) {
+
                 redshiftClient.query(queryRedshift, (error,result)=>{
                     if(error)
                         res.send({error:"Something went wrong"})
@@ -88,6 +96,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                         res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched,help:row.help})
                     }
                 })
+
             }
             else{
                 console.log("from_cache")

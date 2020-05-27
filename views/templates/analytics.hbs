@@ -11,19 +11,21 @@
             <br><br>
             <div class="row">
                 <div class="col-10" >
-                    <h3 style="color: #3b3b3b;font-family: 'Hammersmith One', sans-serif;font-weight: bold;border-left:5px solid #000000;padding-left: 10px" id="heading">
-                        {{title}}
-                        in last
-                        <input  style="width: 85px" list="periods" name="period" id="period" value="{{result.0.time_period}}">
-                        <datalist id="periods">
-                            <!-- Options appended by javascript -->
-                        </datalist>
-                        days
-                    </h3>
+                    {{#if result}}
+                        <h3 style="color: #3b3b3b;font-family: 'Hammersmith One', sans-serif;font-weight: bold;border-left:5px solid #000000;padding-left: 10px" id="heading">
+                            {{title}}
+                            in last
+                            <input  style="width: 85px" list="periods" name="period" id="period" value="{{result.0.time_period}}">
+                            <datalist id="periods">
+                                <!-- Options appended by javascript -->
+                            </datalist>
+                            days
+                        </h3>
+                    {{/if}}
                 </div>
                 <div class="col-2">
                     <div class="flex">
-                        <a href="/all_queries/{{result.0.usecase_id}}" class="bttn" style="font-size:13px">Configure</a>
+                        <a href="/all_queries/{{id}}" class="bttn" style="font-size:13px">Add/Edit</a>
                     </div>
                 </div>
             </div>
