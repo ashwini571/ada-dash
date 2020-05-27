@@ -20,7 +20,7 @@ res.render('templates/add_query',{usecase_id:req.params.usecase_id, title:'Add'}
 router.post('/:usecase_id/insert', urlencodedParser, (req,res)=>{
 
     console.log(req.body)
-    let sql = `INSERT INTO all_queries(usecase_id,type,title,query) VALUES("${req.params.usecase_id}","${req.body.type}","${req.body.title}","${req.body.query}")`
+    let sql = `INSERT INTO all_queries(usecase_id,type,title,query,help) VALUES("${req.params.usecase_id}","${req.body.type}","${req.body.title}","${req.body.query}","${req.body.help}")`
     sqliteDb.run(sql,[],(err)=>{
         console.log(err)
         if(err)
@@ -30,10 +30,10 @@ router.post('/:usecase_id/insert', urlencodedParser, (req,res)=>{
     })
 })
 
-/* POST, Updating Queries;  */
+/* PUT, Updating Queries;  */
 router.put('/:usecase_id/update', urlencodedParser, (req,res)=>{
 
-    let sql = `UPDATE all_queries SET type="${req.body.type}", title="${req.body.title}", query="${req.body.query}" WHERE id=${req.body.id}`
+    let sql = `UPDATE all_queries SET type="${req.body.type}", title="${req.body.title}", query="${req.body.query}", help="${req.body.help}" WHERE id=${req.body.id}`
     console.log(sql)
     sqliteDb.run(sql,[],(err)=>{
         console.log(err)

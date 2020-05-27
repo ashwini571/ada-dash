@@ -42,17 +42,20 @@
                             <div class="text-center" style="padding-top:28px ">
                                 <h1 class="h3 mb-3 font-weight-normal">Add query for usecase_id :- {{usecase_id}}</h1>
                             </div>
-                            <label>Type :</label>
+                            <label>Type* :</label>
                             <select class="form-control" name="type" id="type" required>
                                 <option value="count" >count</option>
                                 <option value="percent" >percent</option>
                                 <option value="filter" >filter</option>
                                 <option value="all_data">all_data</option>
                             </select><br>
-                            <label >Title :</label>
+                            <label >Title* :</label>
                             <input type="text" name="title" class="form-control -p3" id="title" required><br>
-                            <label>Query :<a href="/run_query">(Test query before deploying)</a></label>
+                            <label>Query* :<a href="/run_query">(Test query before deploying)</a></label>
                             <textarea type="text" name="query" class="form-control -p3" id="text" rows=5 required></textarea>
+                            <br>
+                            <label>Help:</label>
+                            <textarea type="text" name="help" class="form-control -p3" id="help" rows=3 ></textarea>
                             <br>
                             <button class="btn btn-md btn-primary" type="submit">Submit</button>
 

@@ -1,12 +1,14 @@
 /* Makes form editable, This needs to be global as it is called from  tag.onclick */
 function handleEdit(id) {
-    document.getElementById('type'+id).disabled = false;
-    document.getElementById('title'+id).disabled = false;
-    document.getElementById('query'+id).disabled = false;
-    document.getElementById('edit'+id).hidden = true;
-    document.getElementById('save'+id).hidden = false;
+    document.getElementById('type'+id).disabled = false
+    document.getElementById('title'+id).disabled = false
+    document.getElementById('query'+id).disabled = false
+    document.getElementById('help'+id).disabled = false
+    document.getElementById('edit'+id).hidden = true
+    document.getElementById('save'+id).hidden = false
 
-    return false;
+
+    return false
 }
 $(document).ready(function() {
     // Updating via fetch()
@@ -37,7 +39,8 @@ $(document).ready(function() {
                 id: element.id,
                 type: element.getElementsByTagName('select')[0].value,
                 title: element.getElementsByTagName('input')[0].value,
-                query: element.getElementsByTagName('textarea')[0].value
+                query: element.getElementsByTagName('textarea')[0].value,
+                help: element.getElementsByTagName('textarea')[1].value
             }
             putData(reqBody)
         })

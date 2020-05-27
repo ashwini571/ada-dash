@@ -85,13 +85,13 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                     else {
                         console.log("from_redshift")
                         myCache.set(key,result.rows,86400*timePeriod)
-                        res.send({rows: JSON.stringify(result.rows)})
+                        res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched,help:row.help})
                     }
                 })
             }
             else{
                 console.log("from_cache")
-                res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched})
+                res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched,help:row.help})
             }
         }
     })

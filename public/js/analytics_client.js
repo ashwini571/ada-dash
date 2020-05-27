@@ -1,32 +1,41 @@
 $(document).ready(function() {
 
     // Data Targets
-    let fieldsElem = document.getElementById('fields')
-    let rowsElem = document.getElementById('rows')
-    let pivotOutput = document.getElementById('output')
-    let infoElem = document.getElementById('info')
     let output = document.getElementById('output')
+    let title = document.getElementById('heading')
+    let timePeriod = document.getElementById('period')
+    let helpbox = document.getElementById('helpbox')
+
+
 
     /* Used to clear the output area */
     function clearCard() {
-        /* Emptying fields */
-        fieldsElem.innerHTML = ""
-        rowsElem.innerHTML = ""
-        pivotOutput.innerHTML = ""
-        infoElem.innerText = ""
+        /* Emptying field */
+        output.innerHTML = ""
+        helpbox.innerHTML = ""
+        
     }
 
     /* Adds the recieved data to output */
     function parseDataToDom(data, type) {
-        /* Emptying fields before appending */
         clearCard()
-
         if (type === 'count') {
+            console.log(title.innerText)
             let rows = JSON.parse(data.rows)
-            infoElem.innerText = "Count:-" + rows[0].count
+            output.innerText = "Count:-" + rows[0].count
         }
-        else
+        else {
+            console.log(data)
+            if(data.help){
+                helpbox.innerHTML = `<button type="button" id="help" class="btn btn-sm btn-info" data-toggle="popover" data-trigger="focus" title="Help" data-content="${data.help}" >Help!</button>`
+                //Popup helpbox
+                $('[data-toggle="popover"]').popover()
+                $('.popover-dismiss').popover({
+                    trigger: 'focus'
+                })
+            }
             createPivottable(data)
+        }
     }
 
     function noDataToDom(data) {
@@ -35,7 +44,6 @@ $(document).ready(function() {
     }
 
     function getAndShowData(reqBody) {
-        clearCard()
         /*getData function is in utils_client.js */
         getData(reqBody,"/analytics/getData",(data)=>{
             if(data.error)
@@ -50,18 +58,19 @@ $(document).ready(function() {
         output.innerHTML += `<button type="button" id="query_button">Search</button>`
     }
 
-    let elements = document.getElementsByClassName('dropdown-item')
+    let elements = document.getElementsByClassName('options-list')
 
-    /*Event-listener for dropdown items*/
+    /* Event-listeners on elements */
     Array.from(elements).forEach((element) => {
         element.addEventListener('click', (event) => {
             let queryType = element.getAttribute("query_type")
+            clearCard()
             /* For filter type we need to add input fields to DOM */
             if(queryType === "filter")
             {
                 /* Getting names of all input fields required */
                 let inputVar = element.getAttribute('inputVar').split(',')
-                clearCard()
+
                 /* Adding Input field to DOM */
                 appendInputElem(inputVar)
                 /*Listening for input submission */
@@ -77,24 +86,23 @@ $(document).ready(function() {
                         input.push({nameOfInput,valueOfInput})
                     }
                     console.log(input)
-                    let timePeriod = document.getElementById('period').value
+
                     let reqBody = {
                         id:element.id,
                         usecase_id:element.getAttribute('usecase_id'),
                         input:input,
-                        timePeriod:timePeriod
+                        timePeriod:timePeriod.value
                     }
                     getAndShowData(reqBody)
                  })
             }
             else /* Else we send the reqBody */
             {
-                let timePeriod = document.getElementById('period').value
                 let reqBody ={
                     id:element.id,
                     usecase_id:element.getAttribute('usecase_id'),
                     type:queryType,
-                    timePeriod:timePeriod
+                    timePeriod:timePeriod.value
                 }
                 getAndShowData(reqBody)
             }

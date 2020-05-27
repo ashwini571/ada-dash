@@ -7,11 +7,11 @@
 
     {{#*inline "body-block" }}
 
-        <div class="container" >
+        <div class="container-fluid" style="width: 85%">
             <br><br>
             <div class="row">
                 <div class="col-10" >
-                    <h3 style="font-family: 'Hammersmith One', sans-serif;	border-left:5px solid #000000;padding-left: 10px">
+                    <h3 style="color: #3b3b3b;font-family: 'Hammersmith One', sans-serif;font-weight: bold;border-left:5px solid #000000;padding-left: 10px" id="heading">
                         {{title}}
                         in last
                         <input  style="width: 85px" list="periods" name="period" id="period" value="{{result.0.time_period}}">
@@ -21,61 +21,58 @@
                         days
                     </h3>
                 </div>
-
                 <div class="col-2">
-                    <div class="flex" style="float: right;">
-                        <a href="/all_queries/{{result.0.usecase_id}}" class="bttn">Configure</a>
+                    <div class="flex">
+                        <a href="/all_queries/{{result.0.usecase_id}}" class="bttn" style="font-size:13px">Configure</a>
                     </div>
                 </div>
-
             </div>
             <br>
         </div>
         <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
         <br>
-        <div class="container">
+        <div class="container-fluid" style="width: 85%">
             <div class="row">
-                <div class="col-3">
-                    <h5><b>Choose Type of Query</b></h5>
+                <div class="col-md-4">
+                    <ul id="accordion" class="custom-ul" style="background: lightgrey;border-radius: 10px 10px 10px 10px;">
+                        {{#each result}}
+                        <li>
+                            <a class="options-list active" href="#tabs-2" query_type="{{type}}" usecase_id="{{usecase_id}}" id="{{id}}" inputVar="{{inputVar}}">
+                                <div class="tag">
+                                    <div class="icon">
+                                        <div class="block">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                    <div class="title">{{query_title}}</div>
+                                </div>
+                            </a>
+                        </li>
+                        {{/each}}
+
+                    </ul>
                 </div>
-                <div class="col-3">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Select
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            {{#each result}}
-                                <a class="dropdown-item" href="#" query_type="{{type}}" usecase_id="{{usecase_id}}" id="{{id}}" inputVar="{{inputVar}}">{{query_title}}</a>
-                            {{/each}}
+                <div class="col-md-8">
+                    <div class="browser">
+                        <div class="top-bar">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+
+                        <div id="window" class="table-responsive">
+                            <div class="row" id="helpbox">
+
+                            </div>
+                            <div class="row" id="output">
+
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="clearfix"></div>
+                <hr>
             </div>
-            <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
-            <h5>Output:</h5>
-            <div class="row card" style="height: 700px;background-color:oldlace;padding:10px;width:auto">
-
-                <h5 id="info"></h5>
-                <div class="table-responsive"  style="height:auto;max-height: 700px;max-width:1200px">
-                    <table class="table">
-                        <thead class="thead-dark">
-                            <tr id="fields">
-
-                            </tr>
-                        </thead>
-
-                        <tbody id="rows">
-
-                        </tbody>
-                    </table>
-
-                    <div id="output">
-
-                    </div>
-
-                </div>
-            </div>
-            <hr class="style-five">
 
         </div>
 
@@ -96,7 +93,6 @@
         <script src="/public/js/utils_client.js"></script>
         <script src="/public/js/analytics_client.js"></script>
         <script src="/public/js/custom.js"></script>
-
     {{/inline}}
 
 

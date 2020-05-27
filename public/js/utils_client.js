@@ -5,7 +5,6 @@ function createPivottable(data)
     let derivers = $.pivotUtilities.derivers
     let renderers = $.extend($.pivotUtilities.renderers,
         $.pivotUtilities.plotly_renderers)
-
     $("#output").pivotUI(modifiedData, {
         renderers: renderers,
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
@@ -16,9 +15,8 @@ function createPivottable(data)
 // Fetching data
 function getData(reqBody,url,callback)
 {
-    info.innerText = "Loading..."
-    console.log(reqBody)
-
+    /* Loader */
+    document.getElementById("output").innerHTML = `<div class="loader"></div>`
     let init ={
         method:"POST",
         headers: { 'Content-Type': 'application/json' },

@@ -1,4 +1,7 @@
-
+.title{
+  font-weight: bold;
+  color: #3D3D3D;
+}
 * {
   box-sizing: border-box;
 }
@@ -36,10 +39,10 @@ body {
 
 /* Style the counter cards */
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 16px;
+  box-shadow: 0 8px 10px 0 rgba(0, 0, 0, 0.2);
+  padding: 20px;
   text-align: center;
-  background-color: #f1f1f1;
+  background-color: floralwhite;
 }
 a.custom-card,
 a.custom-card:hover {
