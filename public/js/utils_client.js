@@ -7,6 +7,8 @@ function createPivottable(data)
         $.pivotUtilities.plotly_renderers)
     $("#output").pivotUI(modifiedData, {
         renderers: renderers,
+        // rendererName: "Line Chart",
+        // cols:["download_time"],
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
     })
 

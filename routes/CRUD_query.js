@@ -20,7 +20,7 @@ res.render('templates/add_query',{usecase_id:req.params.usecase_id, title:'Add'}
 router.post('/:usecase_id/insert', urlencodedParser, (req,res)=>{
 
     console.log(req.body)
-    let sql = `INSERT INTO all_queries(usecase_id,type,title,query,help) VALUES("${req.params.usecase_id}","${req.body.type}","${req.body.title}","${req.body.query}","${req.body.help}")`
+    let sql = `INSERT INTO all_queries(usecase_id,type,title,query,description) VALUES("${req.params.usecase_id}","${req.body.type}","${req.body.title}","${req.body.query}","${req.body.description}")`
     sqliteDb.run(sql,[],(err)=>{
         console.log(err)
         if(err)

@@ -27,7 +27,7 @@ router.get('/add',(req,res)=>{
 /* POST Adding Use cases */
 router.post('/add',urlencodedParser,(req,res)=>{
 
-  let sql = `INSERT INTO analytics_cases(id,title,time_period) VALUES("${req.body.id}","${req.body.title}","${req.body.time_period}")`
+  let sql = `INSERT INTO analytics_cases(id,title,tablename) VALUES("${req.body.id}","${req.body.title}","${req.body.tablename}")`
   sqliteDb.run(sql,[],(err)=>{
     console.log(err)
     if(err)
