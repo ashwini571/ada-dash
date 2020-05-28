@@ -27,6 +27,7 @@ const extractVar = (row)=>{
             element.inputVar = []
     })
 }
+
 /*Inserting user input values to SQL query for filtering */
 const userInputToQuery = (query,input)=>{
 
@@ -36,7 +37,16 @@ const userInputToQuery = (query,input)=>{
     return query
 }
 
-/* GET  Shows Options For Different Types of Query at Analytics Page */
+const decideTimeDependency = (row)=>{
+   row.forEach((element)=>{
+       if(element.query.search("\\$timePeriod")!==-1)
+           element.time_dependent = 1
+       else
+           element.time_dependent = 0
+   })
+}
+
+/* GET,  Shows Options For Different Types of Query at Analytics Page */
 router.get('/:usecase_id', (req, res, )=> {
     /* fetching all cases from sqlite */
     let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,
@@ -52,12 +62,14 @@ router.get('/:usecase_id', (req, res, )=> {
         else{
             /*Extracting variables from query enclosed under "{ }" */
             extractVar(row)
+            decideTimeDependency(row)
+            console.log(row)
             res.render('templates/analytics', {title: row[0].usecase_title, clusterName: clusterName, result: row, id:req.params.usecase_id})
         }
     })
 })
 
-/* POST  Getting data according to the type of query selected */
+/* POST,  Getting data according to the type of query selected */
 router.post('/getData', urlencodedParser, (req,res)=>{
     /* getting data from request body */
     let id = req.body.id

@@ -7,7 +7,7 @@
 
     {{#*inline "body-block" }}
 
-        <div class="container-fluid" style="width: 85%">
+        <div class="container-fluid" style="width: 90%">
             <br><br>
             <div class="row">
                 <div class="col-10" >
@@ -15,7 +15,7 @@
                         <h3 style="color: #3b3b3b;font-family: 'Hammersmith One', sans-serif;font-weight: bold;border-left:5px solid #000000;padding-left: 10px" id="heading">
                             {{title}}
                             in last
-                            <input  style="width: 85px" list="periods" name="period" id="period" value="{{result.0.time_period}}">
+                            <input  style="width: 85px" list="periods" name="period" id="period" value="7">
                             <datalist id="periods">
                                 <!-- Options appended by javascript -->
                             </datalist>
@@ -33,13 +33,13 @@
         </div>
         <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
         <br>
-        <div class="container-fluid" style="width: 85%">
+        <div class="container-fluid" style="width: 90%">
             <div class="row">
                 <div class="col-md-4">
                     <ul id="accordion" class="custom-ul" style="background: lightgrey;border-radius: 10px 10px 10px 10px;">
                         {{#each result}}
                         <li>
-                            <a class="options-list active" href="#tabs-2" query_type="{{type}}" usecase_id="{{usecase_id}}" id="{{id}}" inputVar="{{inputVar}}">
+                            <a class="options-list active" href="#" query_type="{{type}}" usecase_id="{{usecase_id}}" id="{{id}}" inputVar="{{inputVar}}" time_dependent="{{time_dependent}}">
                                 <div class="tag">
                                     <div class="icon">
                                         <div class="block">

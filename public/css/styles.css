@@ -187,11 +187,12 @@ ul li a.active {
     -o-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+
 }
 
 .circle {
     position: absolute;
-    padding: 2px;
+    padding: 3px;
     border: solid 2px #7b7b7b;
     border-radius: 100%;
     top: 50%;
@@ -272,4 +273,24 @@ ul li a.active {
     height: 100%;
     background:antiquewhite;
     padding:30px;
+}
+
+/* Flash icons */
+.flash{
+
+    -webkit-animation: glowing 1000ms ;
+    -moz-animation: glowing 1000ms ;
+    -o-animation: glowing 1000ms ;
+    animation: glowing 1000ms ;
+}
+
+@-webkit-keyframes glowing {
+    0% { background-color: #B15947; -webkit-box-shadow: 0 0 3px #3498db; }
+    50% { background-color: #3498db; -webkit-box-shadow: 0 0 15px #3498db; }
+    100% { background-color: #B15947; -webkit-box-shadow: 0 0 3px #3498db; }
+}
+@keyframes glowing {
+    0% { background-color: #B15947; box-shadow: 0 0 3px #3498db; }
+    50% { background-color: #3498db; box-shadow: 0 0 15px #3498db; }
+    100% { background-color: #B15947; box-shadow: 0 0 3px #3498db; }
 }
