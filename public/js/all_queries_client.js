@@ -3,7 +3,7 @@ function handleEdit(id) {
     document.getElementById('type'+id).disabled = false
     document.getElementById('title'+id).disabled = false
     document.getElementById('query'+id).disabled = false
-    document.getElementById('help'+id).disabled = false
+    document.getElementById('description'+id).disabled = false
     document.getElementById('edit'+id).hidden = true
     document.getElementById('save'+id).hidden = false
 
@@ -18,12 +18,14 @@ $(document).ready(function() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(reqBody)
         }
-        fetch("/handle_query/" + reqBody.usecase_id + "/update", init)
+        fetch("/config/query/update" , init)
             .then((res) => {
                 return res.json()
             }).then((data) => {
-            if (data.msg)
+            if (data.msg){
                 alert("Updated Successfully!")
+                location.reload()
+            }
             else
                 console.log(data.error)
         })
@@ -40,7 +42,7 @@ $(document).ready(function() {
                 type: element.getElementsByTagName('select')[0].value,
                 title: element.getElementsByTagName('input')[0].value,
                 query: element.getElementsByTagName('textarea')[0].value,
-                help: element.getElementsByTagName('textarea')[1].value
+                description: element.getElementsByTagName('textarea')[1].value
             }
             putData(reqBody)
         })
@@ -50,7 +52,7 @@ $(document).ready(function() {
         let init = {
             method: "DELETE",
         }
-        fetch("/handle_query/delete/"+id, init)
+        fetch("/config/query/delete/"+id, init)
             .then((res) => {
                 return res.json()
             }).then((data) => {

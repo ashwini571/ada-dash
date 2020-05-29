@@ -1,9 +1,7 @@
 let logger = require('morgan')
 let indexRouter = require('./routes/index')
 let analyticsRouter = require('./routes/analytics')
-let allQueriesRouter = require('./routes/all_queries')
-let crudFilterRouter = require('./routes/CRUD_query')
-let test_cache = require('./routes/test_cache')
+let configRouter = require('./routes/configure')
 let AWS = require('aws-sdk')
 let express = require('express')
 let createError = require('http-errors')
@@ -55,9 +53,7 @@ app.use('/public', express.static(__dirname + '/public/'));
 //Route files
 app.use('/', indexRouter)
 app.use('/analytics', analyticsRouter)
-app.use('/all_queries', allQueriesRouter)
-app.use('/handle_query', crudFilterRouter)
-app.use('/test',test_cache)
+app.use('/config', configRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

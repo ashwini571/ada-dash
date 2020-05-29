@@ -15,7 +15,7 @@
     </title>
     <style>
         body{
-            background-color:#fbfbfb !important;
+            background-color:#fff !important;
         }
         *{
             font-family: "Lucida Console", Monaco, monospace;
@@ -31,10 +31,10 @@
 </head>
 <body>
 
-    <header>
+    <header style="box-shadow: 0 0 28px 0 rgba(0,0,0,.12)">
         {{> navbar }}
     </header>
-
+    <div class="clearfix"></div>
     {{> message }}
 
     {{#> body-block}}
