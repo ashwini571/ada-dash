@@ -35,7 +35,7 @@ router.post('/add',urlencodedParser,(req,res)=>{
     else {
       /* Calling the Add_query function */
       req.params.id = req.body.id
-      res.render('templates/add_query', {title: 'Add Query', msg: "Created Successfully", usecase_id: req.body.id})
+      res.render('templates/config_usecase/add_query', {title: 'Add Query', msg: "Created Successfully", usecase_id: req.body.id})
     }
   })
 })

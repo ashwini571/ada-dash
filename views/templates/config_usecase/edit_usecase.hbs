@@ -1,0 +1,32 @@
+{{#> base}}
+    {{#*inline "body-block" }}
+        {{> sidebar }}
+        <div class="content-container">
+            <div class="container">
+                <br><br><br>
+                <div class="container card card-custom" style="padding-bottom: 20px;">
+                    <form  id="usecase-form">
+                        <div class="text-center" style="padding-top:28px ">
+                            <h1 class="h3 mb-3 font-weight-normal">Edit usecase !</h1>
+                        </div>
+                        <label>Id :</label>
+                        <input type="text" name="id" id="id-usecase" class="form-control -p3" placeholder="" value="{{result.id}}" required disabled><br>
+                        <label >Title :</label>
+                        <input type="text" name="title" id="title-usecase" class="form-control -p3"  value="{{result.title}}" required disabled><br>
+                        <label >Table Name :</label>
+                        <input type="text" name="tablename" id="tablename-usecase" class="form-control -p3" value="{{result.tablename}}" required disabled><br>
+                        <br>
+                        <button type="button" class="btn btn-outline-secondary" id="edit-usecase" onclick="return handleEditUsecase({{id}})">Edit</button>
+                        <button type="submit" class="btn btn-outline-secondary" id="save-usecase" hidden>Save</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    {{/inline}}
+    {{#*inline "scripts-block" }}
+        <script src="/public/js/configure_client.js"></script>
+    {{/inline}}
+{{/base}}
+

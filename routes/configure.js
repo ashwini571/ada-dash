@@ -10,6 +10,36 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
 
+
+/*GET, Edit-Usecase form */
+router.get('/usecase/:usecase_id', (req, res )=> {
+
+    /* fetching all cases from sqlite */
+    let sql = `SELECT * FROM analytics_cases WHERE id = '${req.params.usecase_id}' `
+    sqliteDb.get(sql,[],(err,row)=>{
+        /* row.length==0 so that it doesn't catch error in  row[0].title*/
+        console.log(row)
+        if(err || row.length==0)
+            return res.render('templates/config_usecase/edit_usecase',{title:"Error",error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
+
+        res.render('templates/config_usecase/edit_usecase', { title:"Edit Usecase", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
+    })
+})
+
+/*PUT, Edit-usecase form submisson */
+router.put('/usecase/update', (req,res)=>{
+    let sql = `UPDATE analytics_cases SET title="${req.body.title}", tablename="${req.body.tablename}" WHERE id='${req.body.id}'`
+    console.log(sql)
+    sqliteDb.run(sql,[],(err)=>{
+        console.log(err)
+        if(err)
+            res.send({error:err})
+        else
+            res.send({msg:"Updated Successfully!"})
+    })
+})
+
+/*GET, See all queries */
 router.get('/all_queries/:usecase_id', (req, res )=> {
 
     /* fetching all cases from sqlite */
@@ -17,10 +47,9 @@ router.get('/all_queries/:usecase_id', (req, res )=> {
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
         if(err || row.length==0)
-            return res.render('templates/config_usecase/all_queries',{title:"Error",error:"Error querying Sqlite"})
+            return res.render('templates/config_usecase/all_queries',{title:"Error",error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
 
-        res.render('templates/config_usecase/all_queries', { title:"All Queries", clusterName:clusterName,result:row })
-
+        res.render('templates/config_usecase/all_queries', { title:"All Queries", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
     })
 })
 
@@ -38,7 +67,7 @@ router.post('/query/add/:usecase_id', urlencodedParser, (req,res)=>{
     sqliteDb.run(sql,[],(err)=>{
         console.log(err)
         if(err)
-            res.render('templates/config_usecase/add_query', {error:err})
+            res.render('templates/config_usecase/add_query', {error:err,usecase_id:req.params.usecase_id})
         else
             res.render('templates/config_usecase/add_query', {msg:"Added Successfully!",usecase_id:req.params.usecase_id})
     })

@@ -1,14 +1,18 @@
 {{#> base}}
-
+    {{#*inline "head-block" }}
+        <link rel="stylesheet" href="/public/css/styles.css">
+    {{/inline}}
     {{#*inline "body-block" }}
-        <div class="container" >
-            <br><br>
-            <div class="row">
-                <a class="btn btn-secondary" href="/config/query/add/{{result.0.usecase_id}}">Add Query</a>
+        {{> sidebar }}
+        <div class="content-container">
+            <div class="container" >
+                <br><br>
+                <div class="row">
+                    <a class="btn btn-secondary" href="/config/query/add/{{usecase_id}}">Add Query</a>
+                </div>
+                <br><br>
             </div>
-            <br><br>
-        </div>
-        <div class="container">
+            <div class="container">
             <div class="accordion" id="accordionExample">
                 {{#each result }}
                     <div class="card">
@@ -55,9 +59,9 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="col-sm-offset-2 col-sm-10">
-                                            <button type="button" class="btn btn-outline-secondary" id="edit{{id}}" onclick="return handleEdit({{id}})">Edit</button>
-                                            <button type="submit" class="btn btn-outline-secondary" id="save{{id}}" hidden>Save</button>
-                                            <button type="button" class="btn btn-danger del-button" id="delete{{id}}">Delete</button>
+                                            <button type="button" class="btn btn-outline-secondary" id="edit-query{{id}}" onclick="return handleEditQuery({{id}})">Edit</button>
+                                            <button type="submit" class="btn btn-outline-secondary" id="save-query{{id}}" hidden>Save</button>
+                                            <button type="button" class="btn btn-danger del-button" id="delete-query{{id}}">Delete</button>
                                         </div>
                                     </div>
                                     <input type="hidden" name="id{{id}}" value="{{id}}">
@@ -67,13 +71,15 @@
                         </div>
                     </div>
                 {{/each}}
+        </div>
+
 
             </div>
 
         </div>
     {{/inline}}
     {{#*inline "scripts-block" }}
-        <script src="/public/js/all_queries_client.js"></script>
+        <script src="/public/js/configure_client.js"></script>
     {{/inline}}
 {{/base}}
 
