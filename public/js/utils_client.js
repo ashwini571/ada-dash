@@ -14,7 +14,7 @@ function createPivottable(data)
 
 }
 
-// Fetching data
+// Fetching data for pivottable
 function getData(reqBody,url,callback)
 {
     /* Loader */
@@ -30,5 +30,41 @@ function getData(reqBody,url,callback)
         }).then((data)=>{
         callback(data)
     })
+}
 
+// Update function via fetch()
+function putData(reqBody,url) {
+    let init = {
+        method: "PUT",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(reqBody)
+    }
+    fetch(url , init)
+        .then((res) => {
+            return res.json()
+        }).then((data) => {
+        if (data.msg){
+            alert("Updated Successfully!")
+            location.reload()
+        }
+        else
+            console.log(data.error)
+    })
+}
+// Delete function via fetch()
+function delData(url) {
+    let init = {
+        method: "DELETE",
+    }
+    fetch(url, init)
+        .then((res) => {
+            return res.json()
+        }).then((data) => {
+        if (data.msg) {
+            alert("Deleted Successfully!")
+            location.reload()
+        }
+        else
+            alert(data.error)
+    })
 }

@@ -5,7 +5,7 @@
             <br><br><br>
             <div class="row">
                 <div class="col-md-5">
-                    <div class="card border-light ">
+                    <div class="card ">
                         <div class="card-header">Note </div>
                         <div class="card-body">
 
@@ -19,29 +19,36 @@
                 </div>
                 <div class="col-md-6">
                     <div class="container card card-custom" style="padding-bottom: 20px;">
-                        <form>
+                        <form id="gen_sql_form" method="post" action="/config/plot/add/{{usecase_id}}">
                             <div class="text-center" style="padding-top:28px "> <h1 class="h3 mb-3 font-weight-normal">Add plot for usecase_id :- {{usecase_id}}</h1> </div>
+
                             <div class="form-group row">
-                                <label class="col-sm-2 col-form-label">Tablename:</label>
+                                <label class="col-sm-2 col-form-label">Table :</label>
                                 <div class="col-sm-10">
-                                    <input type="text" readonly class="form-control" value="{{table}}">
+                                    <input type="text" name="tablename" id="tablename_form" readonly class="form-control" value="{{table}}">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label  class="col-sm-2 col-form-label">X-axis:</label>
+                                <label class="col-sm-2 col-form-label">Title :</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control" name="x-axis" id="x-axis" required>
+                                    <input type="text" name="title" id="title_form"  class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label  class="col-sm-2 col-form-label">X-axis :</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" name="x_axis" id="x_axis_form" required>
                                         {{#each result}}
                                             <option value="{{column_name}}" >{{column_name}}</option>
                                         {{/each}}
                                     </select>
-                                    <small id="y-axis-help" class="form-text text-muted">Choose only date-time field.</small>
+                                    <small id="y_axis_help" class="form-text text-muted">Choose only date-time field.</small>
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label  class="col-sm-2 col-form-label">Y-axis:</label>
+                                <label  class="col-sm-2 col-form-label">Y-axis :</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control" name="y-axis" id="y-axis" required>
+                                    <select class="form-control" name="y_axis" id="y_axis_form" required>
                                        {{#each result}}
                                            <option value="{{column_name}}" >{{column_name}}</option>
                                        {{/each}}
@@ -49,24 +56,30 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label  class="col-sm-4 col-form-label">Date-Time Format:</label>
+                                <label  class="col-sm-4 col-form-label">Date-Time Format :</label>
                                 <div class="col-sm-8" >
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="epoch"  value="epoch" >
+                                        <input class="form-check-input" type="radio" name="date_time_format"  value="epoch" >
                                         <label class="form-check-label">
                                            Epoch
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="timestamp" value="timestamp">
+                                        <input class="form-check-input" type="radio" name="date_time_format" value="timestamp">
                                         <label class="form-check-label">
                                             Timestamp
                                         </label>
                                     </div>
                                 </div>
                             </div>
-
-                            <button class="btn btn-md btn-primary" type="submit">Generate Sql</button>
+                            <div class="form-group row" style="display:none" id="sql_block">
+                                <label  class="col-sm-2 col-form-label">Sql :</label>
+                                <div class="col-sm-10">
+                                    <textarea type="text" name="gen_sql" class="form-control -p3" id="gen_sql" rows=5></textarea>
+                                </div>
+                            </div>
+                            <button class="btn btn-md btn-primary" type="button" id="gen_sql_btn">Generate Sql</button>
+                            <button class="btn btn-md btn-primary" type="submit" id="save_btn" style="display: none">Save</button>
                         </form>
                     </div>
                 </div>
@@ -74,6 +87,9 @@
             <br><br>
             <hr>
         </div>
+    {{/inline}}
+    {{#*inline "scripts-block" }}
+        <script src="/public/js/crud_plot_client.js"></script>
     {{/inline}}
 
 {{/base}}

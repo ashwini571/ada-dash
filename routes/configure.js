@@ -10,6 +10,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
 
+/* Routers for usecase  --start*/
 
 /*GET, Edit-Usecase form */
 router.get('/usecase/:usecase_id', (req, res )=> {
@@ -38,6 +39,9 @@ router.put('/usecase/update', (req,res)=>{
             res.send({msg:"Updated Successfully!"})
     })
 })
+/* Routers for usecase --end*/
+
+/* Routers for queries  --start*/
 
 /*GET, See all queries */
 router.get('/all_queries/:usecase_id', (req, res )=> {
@@ -100,8 +104,18 @@ router.delete('/query/delete/:id', (req,res)=>{
             res.send({msg:"Deleted Successfully!"})
     })
 })
+/* Routers for queries  --end*/
+
+
+/* Routers for PLOTS  --start*/
+router.get('/all_plots/:usecase_id', (req,res)=>{
+    
+})
+
 /*GET, Form-page for adding plots */
 router.get('/plot/add/:usecase_id', (req,res)=>{
+    let msg = req.query.msg
+    let error = req.query.error
     /*Fetching tablename */
     let sql=`SELECT tablename FROM analytics_cases WHERE id='${req.params.usecase_id}'`
     sqliteDb.get(sql,[],(err,row)=>{
@@ -114,10 +128,38 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
             else if(result.rows.length==0)
                 res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
             else
-                res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:result.rows, usecase_id:req.params.usecase_id })
+                res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:result.rows, usecase_id:req.params.usecase_id, msg:msg,error:error })
         })
     })
-
 })
+/* POST, generates sql for creating plots */
+router.post('/plot/gen_sql', (req,res)=>{
+    let sql
+    console.log(req.body)
+    if(req.body.date_time_format == 'epoch'){
+        sql = `SELECT ROW_NUMBER() OVER (ORDER BY ${req.body.x_axis} ASC) as ${req.body.y_axis}_count, ${req.body.y_axis}  as id, timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second' AS time FROM marvin.${req.body.tablename} WHERE ${req.body.x_axis} = (SELECT MAX(${req.body.x_axis}) FROM marvin.${req.body.tablename} WHERE ${req.body.y_axis} =id) AND time>getdate()-$timePeriod`
+    }
+    else{
+        sql = `SELECT ROW_NUMBER() OVER (ORDER BY ${req.body.x_axis} ASC) as ${req.body.y_axis}_count, ${req.body.y_axis}  as id, ${req.body.x_axis} FROM marvin.${req.body.tablename} WHERE ${req.body.x_axis} = (SELECT MAX(${req.body.x_axis}) FROM marvin.${req.body.tablename} WHERE ${req.body.y_axis} =id) AND ${req.body.x_axis}>getdate()-$timePeriod`
+    }
+    res.send({sql:sql})
+})
+/* POST, Insert new plot */
+router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
+    console.log(req.body)
+    let sql = `INSERT INTO all_plots(usecase_id,x_axis,y_axis,date_time_format,title,sql) VALUES("${req.params.usecase_id}", "${req.body.x_axis}", "${req.body.y_axis}", "${req.body.date_time_format}", "${req.body.title}", "${req.body.gen_sql}")`
+    sqliteDb.run(sql,[], (err)=>{
+        if(err){
+         let error = err
+         res.redirect('/config/plot/add' +req.params.usecase_id+'/?error=' + error)
+        }
+        else{
+            let msg = encodeURIComponent("Added Successfully!")
+            res.redirect('/config/plot/add/'+req.params.usecase_id+'/?msg=' + msg)
+        }
+    })
+})
+
+/* Routers for PLOT  --end*/
 
 module.exports = router
