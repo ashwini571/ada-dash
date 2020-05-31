@@ -87,8 +87,8 @@ $(document).ready(function() {
 
 
     /*Update and delete for Usecase --START */
-    let usecaseForm = document.getElementById('usecase-form')
-    let usecaseDelButton = document.getElementById('usecase-del')
+    let usecaseForm = document.getElementById('form-usecase')
+    let usecaseDelButton = document.getElementById('del-usecase')
 
     usecaseForm.addEventListener('submit',(event)=>{
         event.preventDefault()

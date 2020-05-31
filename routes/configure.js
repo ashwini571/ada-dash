@@ -100,5 +100,24 @@ router.delete('/query/delete/:id', (req,res)=>{
             res.send({msg:"Deleted Successfully!"})
     })
 })
+/*GET, Form-page for adding plots */
+router.get('/plot/add/:usecase_id', (req,res)=>{
+    /*Fetching tablename */
+    let sql=`SELECT tablename FROM analytics_cases WHERE id='${req.params.usecase_id}'`
+    sqliteDb.get(sql,[],(err,row)=>{
+        if(err)
+            return res.render('templates/error')
+        let query = `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${row.tablename}'`
+        redshiftClient.query(query, (error,result)=>{
+            if(error)
+                res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"Something went wrong", usecase_id:req.params.usecase_id})
+            else if(result.rows.length==0)
+                res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
+            else
+                res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:result.rows, usecase_id:req.params.usecase_id })
+        })
+    })
+
+})
 
 module.exports = router

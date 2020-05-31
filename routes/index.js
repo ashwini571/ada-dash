@@ -64,7 +64,7 @@ router.post('/run_query', urlencodedParser, (req,res)=>{
   let query = req.body.query
   console.log(query)
   redshiftClient.query(query, (error,result)=>{
-    console.log(error)
+    console.log(result)
     if(error)
       res.send({error:"Something went wrong"})
     else if(result.rows.length==0)
