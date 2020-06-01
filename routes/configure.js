@@ -141,11 +141,12 @@ router.post('/plot/gen_sql', (req,res)=>{
     let sql
     console.log(req.body)
     if(req.body.date_time_format == 'epoch'){
-        sql = `SELECT ROW_NUMBER() OVER (ORDER BY ${req.body.x_axis} ASC) as ${req.body.y_axis}_count, ${req.body.y_axis}  as id, timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second' AS time FROM marvin.${req.body.tablename} WHERE ${req.body.x_axis} = (SELECT MAX(${req.body.x_axis}) FROM marvin.${req.body.tablename} WHERE ${req.body.y_axis} =id) AND time>getdate()-$timePeriod`
+        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second') AS time FROM marvin.${req.body.tablename} WHERE time>getdate()-$timePeriod GROUP BY time order by time;`
     }
     else{
-        sql = `SELECT ROW_NUMBER() OVER (ORDER BY ${req.body.x_axis} ASC) as ${req.body.y_axis}_count, ${req.body.y_axis}  as id, ${req.body.x_axis} FROM marvin.${req.body.tablename} WHERE ${req.body.x_axis} = (SELECT MAX(${req.body.x_axis}) FROM marvin.${req.body.tablename} WHERE ${req.body.y_axis} =id) AND ${req.body.x_axis}>getdate()-$timePeriod`
+        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',cast(${req.body.x_axis} AS timestamp)) AS time FROM marvin.${req.body.tablename} WHERE time>getdate()-$timePeriod GROUP BY time order by time;`
     }
+
     res.send({sql:sql})
 })
 /* POST, Insert new plot */
