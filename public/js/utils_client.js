@@ -7,7 +7,7 @@ function createPivottable(data) {
     $("#output").pivotUI(modifiedData, {
         renderers: renderers,
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
-    })
+    },true)
 }
 // Pivottable with Line chart as default
 function createPlot(data,x_axis,y_axis)
@@ -23,7 +23,7 @@ function createPlot(data,x_axis,y_axis)
         aggregatorName :"Sum",
         vals: [y_axis+"_count"],
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
-    })
+    },true)
 }
 
 // Fetching data for pivottable

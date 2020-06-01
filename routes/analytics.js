@@ -139,7 +139,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
             res.send({error:"No data found"})
         else {
             let queryRedshift = row.query
-            let key = usecase_id+"_"+id+"_"+timePeriod
+            let key = usecase_id+"$"+id+"$"+timePeriod
 
             queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
             let cachedData = myCache.get(key)
@@ -147,6 +147,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
             if(cachedData == undefined) {
 
                 redshiftClient.query(queryRedshift, (error,result)=>{
+                    console.log(error)
                     if(error)
                         res.send({error:"Something went wrong"})
                     else if(result.rows.length===0)
