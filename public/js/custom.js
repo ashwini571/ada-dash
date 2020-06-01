@@ -13,14 +13,17 @@ $(document).ready(function(){
         }
     }
 
-    let optionsList = document.getElementsByClassName('options-list')
+
+    let queryList = Array.prototype.slice.call(document.getElementsByClassName("query-list"), 0)
+    let plotList = Array.prototype.slice.call(document.getElementsByClassName("plot-list"), 0)
+    let optionsList = queryList.concat(plotList)
+
     /* Adding indicator on icon */
     Array.from(optionsList).forEach((element)=>{
        if(element.getAttribute('time_dependent') === '1') {
            setAttributes(element.getElementsByClassName('circle')[0],{"style":"background-color:yellow"})
            setAttributes(element.getElementsByClassName('icon')[0],{"data-toggle":"tooltip", "data-placement":"right", "title":"Results are time-dependent"})
        }
-
     })
     /* Flash icons on input change */
     timePeriod.addEventListener('input',(event)=>{

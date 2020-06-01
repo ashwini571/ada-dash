@@ -51,7 +51,7 @@ router.get('/all_queries/:usecase_id', (req, res )=> {
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
         if(err || row.length==0)
-            return res.render('templates/config_usecase/all_queries',{title:"Error",error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
+            return res.render('templates/config_usecase/all_queries',{error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
 
         res.render('templates/config_usecase/all_queries', { title:"All Queries", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
     })
@@ -114,8 +114,12 @@ router.get('/all_plots/:usecase_id', (req,res)=>{
 
 /*GET, Form-page for adding plots */
 router.get('/plot/add/:usecase_id', (req,res)=>{
-    let msg = req.query.msg
-    let error = req.query.error
+    let message =[],error=[]
+    if(req.query.msg!==undefined)
+        message.push(req.query.msg)
+    if(req.query.error!==undefined)
+        message.push(req.query.err)
+
     /*Fetching tablename */
     let sql=`SELECT tablename FROM analytics_cases WHERE id='${req.params.usecase_id}'`
     sqliteDb.get(sql,[],(err,row)=>{
@@ -128,7 +132,7 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
             else if(result.rows.length==0)
                 res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
             else
-                res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:result.rows, usecase_id:req.params.usecase_id, msg:msg,error:error })
+                res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:result.rows, usecase_id:req.params.usecase_id, message:message ,error:error })
         })
     })
 })
@@ -147,7 +151,7 @@ router.post('/plot/gen_sql', (req,res)=>{
 /* POST, Insert new plot */
 router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
     console.log(req.body)
-    let sql = `INSERT INTO all_plots(usecase_id,x_axis,y_axis,date_time_format,title,sql) VALUES("${req.params.usecase_id}", "${req.body.x_axis}", "${req.body.y_axis}", "${req.body.date_time_format}", "${req.body.title}", "${req.body.gen_sql}")`
+    let sql = `INSERT INTO all_plots(usecase_id,x_axis,y_axis,date_time_format,title,query) VALUES("${req.params.usecase_id}", "${req.body.x_axis}", "${req.body.y_axis}", "${req.body.date_time_format}", "${req.body.title}", "${req.body.gen_sql}")`
     sqliteDb.run(sql,[], (err)=>{
         if(err){
          let error = err

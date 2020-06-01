@@ -4,16 +4,11 @@ $(document).ready(function() {
     let output = document.getElementById('output')
     let title = document.getElementById('heading')
     let timePeriod = document.getElementById('period')
-    let helpbox = document.getElementById('helpbox')
-
-
 
     /* Used to clear the output area */
     function clearCard() {
         /* Emptying field */
         output.innerHTML = ""
-        helpbox.innerHTML = ""
-        
     }
 
     /* Adds the recieved data to output */
@@ -24,16 +19,12 @@ $(document).ready(function() {
             let rows = JSON.parse(data.rows)
             output.innerText = "Count:-" + rows[0].count
         }
+        else if(type === 'plot')
+        {
+            createPlot(data,data.x_axis,data.y_axis)
+        }
         else {
             console.log(data)
-            if(data.help){
-                helpbox.innerHTML = `<button type="button" id="help" class="btn btn-sm btn-info" data-toggle="popover" data-trigger="focus" title="Help" data-content="${data.help}" >Help!</button>`
-                //Popup helpbox
-                $('[data-toggle="popover"]').popover()
-                $('.popover-dismiss').popover({
-                    trigger: 'focus'
-                })
-            }
             createPivottable(data)
         }
     }
@@ -43,9 +34,9 @@ $(document).ready(function() {
         output.innerText = data
     }
 
-    function getAndShowData(reqBody) {
+    function getAndShowData(reqBody,url) {
         /*getData function is in utils_client.js */
-        getData(reqBody,"/analytics/getData",(data)=>{
+        getData(reqBody,url,(data)=>{
             if(data.error)
                 noDataToDom(data.error)
             else
@@ -58,16 +49,15 @@ $(document).ready(function() {
         output.innerHTML += `<button type="button" id="query_button">Search</button>`
     }
 
-    let elements = document.getElementsByClassName('options-list')
+    let queryElements = document.getElementsByClassName('query-list')
 
-    /* Event-listeners on elements */
-    Array.from(elements).forEach((element) => {
+    /* Event-listeners on query-options */
+    Array.from(queryElements).forEach((element) => {
         element.addEventListener('click', (event) => {
             let queryType = element.getAttribute("query_type")
             clearCard()
             /* For filter type we need to add input fields to DOM */
-            if(queryType === "filter")
-            {
+            if(queryType === "filter") {
                 /* Getting names of all input fields required */
                 let inputVar = element.getAttribute('inputVar').split(',')
 
@@ -93,19 +83,34 @@ $(document).ready(function() {
                         input:input,
                         timePeriod:timePeriod.value
                     }
-                    getAndShowData(reqBody)
+                    getAndShowData(reqBody,"/analytics/getData")
                  })
             }
-            else /* Else we send the reqBody */
-            {
+            else /* Else we send the reqBody */{
                 let reqBody ={
                     id:element.id,
                     usecase_id:element.getAttribute('usecase_id'),
                     type:queryType,
                     timePeriod:timePeriod.value
                 }
-                getAndShowData(reqBody)
+                getAndShowData(reqBody,"/analytics/getData")
             }
         })
     })
+
+    let plotElements = document.getElementsByClassName('plot-list')
+    /* Event-listeners on plot-options */
+    Array.from(plotElements).forEach((element) => {
+        element.addEventListener('click', (event) => {
+
+            let reqBody ={
+                id:element.id,
+                usecase_id:element.getAttribute('usecase_id'),
+                type:'plot',
+                timePeriod:timePeriod.value
+            }
+            getAndShowData(reqBody,"/analytics/getPlotdata")
+        })
+    })
+
 })

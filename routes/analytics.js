@@ -46,26 +46,31 @@ const decideTimeDependency = (row)=>{
    })
 }
 
-/* GET,  Shows Options For Different Types of Query at Analytics Page */
-router.get('/:usecase_id', (req, res, )=> {
-    /* fetching all cases from sqlite */
-    let sql = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,
+/* GET,  Shows Options For Different Types of Query and plots at Analytics Page */
+router.get('/:usecase_id', (req, res )=> {
+    let error = []
+    /* fetching all queries from sqlite */
+    let sqlForQueries = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,
     aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.usecase_id}" AND aq.usecase_id="${req.params.usecase_id}" `
-    sqliteDb.all(sql,[],(err,row)=>{
-        /* row.length==0 so that it doesn't catch error in  row[0].usecase_title*/
-        if (err) {
-            res.render('templates/analytics', {title: "Error", error: "Error querying Sqlite",id:req.params.usecase_id})
-        }
-        else if(row.length === 0){
-            res.render('templates/analytics', {error: "No queries found",id:req.params.usecase_id})
-        }
-        else{
+    /* fetching all plots from sqlite */
+    let sqlForPlots = `SELECT ap.id,ap.usecase_id,ap.query,ap.title,ap.x_axis,ap.y_axis FROM analytics_cases as ac INNER JOIN all_plots as ap ON ac.id="${req.params.usecase_id}" AND ap.usecase_id="${req.params.usecase_id}" `
+
+    sqliteDb.all(sqlForQueries,[],(errQuery,resQuery)=>{
+        if (errQuery)
+            error.push("Error rendering queries")
+        else {
             /*Extracting variables from query enclosed under "{ }" */
-            extractVar(row)
-            decideTimeDependency(row)
-            console.log(row)
-            res.render('templates/analytics', {title: row[0].usecase_title, clusterName: clusterName, result: row, id:req.params.usecase_id})
+            extractVar(resQuery)
+            decideTimeDependency(resQuery)
         }
+        sqliteDb.all(sqlForPlots,[],(errPlot,resPlot)=>{
+            if(errPlot)
+                error.push("Error rendering plots")
+            else
+                decideTimeDependency(resPlot)
+            let title = (resQuery.length !== 0)?resQuery[0].usecase_title:""
+            res.render('templates/analytics', {clusterName: clusterName,title:title,error:error, resQuery:resQuery,resPlot:resPlot, usecase_id:req.params.usecase_id})
+        })
     })
 })
 
@@ -105,17 +110,62 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                     else {
                         console.log("from_redshift")
                         myCache.set(key,result.rows,86400*timePeriod)
-                        res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched,help:row.help})
+                        res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched})
                     }
                 })
 
             }
             else{
                 console.log("from_cache")
-                res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched,help:row.help})
+                res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched})
             }
         }
     })
+})
+
+router.post('/getPlotData', urlencodedParser, (req,res)=>{
+    /* getting data from request body */
+    let id = req.body.id
+    let usecase_id = req.body.usecase_id
+    let timePeriod = Number(req.body.timePeriod)
+
+    /* brings redshift query from sqlite */
+    let sql = `SELECT * FROM all_plots WHERE id='${id}'`
+    sqliteDb.get(sql,[],(err,row)=>{
+
+        if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
+            res.send({error:"Something went wrong!"})
+        else if(row===undefined)
+            res.send({error:"No data found"})
+        else {
+            let queryRedshift = row.query
+            let key = usecase_id+"_"+id+"_"+timePeriod
+
+            queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
+            let cachedData = myCache.get(key)
+
+            if(cachedData == undefined) {
+
+                redshiftClient.query(queryRedshift, (error,result)=>{
+                    if(error)
+                        res.send({error:"Something went wrong"})
+                    else if(result.rows.length===0)
+                        res.send({error:"No data found"})
+                    else {
+                        console.log("from_redshift")
+                        myCache.set(key,result.rows,86400*timePeriod)
+                        res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched,x_axis:row.x_axis,y_axis:row.y_axis})
+                    }
+                })
+
+            }
+            else{
+                console.log("from_cache")
+                res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched,x_axis:row.x_axis,y_axis:row.y_axis})
+            }
+        }
+    })
+
 })
 
 module.exports = router

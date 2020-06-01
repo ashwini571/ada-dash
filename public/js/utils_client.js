@@ -1,5 +1,16 @@
 // Pivottable
-function createPivottable(data)
+function createPivottable(data) {
+    let modifiedData = JSON.parse(data.rows)
+    let derivers = $.pivotUtilities.derivers
+    let renderers = $.extend($.pivotUtilities.renderers,
+        $.pivotUtilities.plotly_renderers)
+    $("#output").pivotUI(modifiedData, {
+        renderers: renderers,
+        rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
+    })
+}
+// Pivottable with Line chart as default
+function createPlot(data,x_axis,y_axis)
 {
     let modifiedData = JSON.parse(data.rows)
     let derivers = $.pivotUtilities.derivers
@@ -7,16 +18,16 @@ function createPivottable(data)
         $.pivotUtilities.plotly_renderers)
     $("#output").pivotUI(modifiedData, {
         renderers: renderers,
-        // rendererName: "Line Chart",
-        // cols:["download_time"],
+        rendererName: "Line Chart",
+        cols:["time"],
+        aggregatorName :"Sum",
+        vals: [y_axis+"_count"],
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
     })
-
 }
 
 // Fetching data for pivottable
-function getData(reqBody,url,callback)
-{
+function getData(reqBody,url,callback) {
     /* Loader */
     document.getElementById("output").innerHTML = `<div class="loader"></div>`
     let init ={
@@ -32,6 +43,7 @@ function getData(reqBody,url,callback)
     })
 }
 
+/* functions for editing and deleting query and plots */
 // Update function via fetch()
 function putData(reqBody,url) {
     let init = {
