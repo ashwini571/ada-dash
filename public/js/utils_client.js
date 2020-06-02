@@ -1,10 +1,13 @@
 // Pivottable
 function createPivottable(data) {
     let modifiedData = JSON.parse(data.rows)
+    // Brings an array of strings of column names
+    let allColumns = Object.keys(modifiedData[0])
     let derivers = $.pivotUtilities.derivers
     let renderers = $.extend($.pivotUtilities.renderers,
         $.pivotUtilities.plotly_renderers)
     $("#output").pivotUI(modifiedData, {
+        rows:allColumns,
         renderers: renderers,
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",
     },true)
