@@ -36,7 +36,7 @@ $(document).ready(function() {
             event.preventDefault()
             let id = element.id.slice(12)
             if(window.confirm("Are you sure ?"))
-                delData("/config/query/delete/"+id)
+                delData("/config/query/delete/"+id,'query')
         })
     })
     /*Update and delete for queries --END */

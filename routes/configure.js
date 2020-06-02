@@ -20,7 +20,7 @@ router.get('/usecase/:usecase_id', (req, res )=> {
     sqliteDb.get(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
         console.log(row)
-        if(err || row.length==0)
+        if(err || (row!==undefined && row.length==0))
             return res.render('templates/config_usecase/edit_usecase',{title:"Error",error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
 
         res.render('templates/config_usecase/edit_usecase', { title:"Edit Usecase", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
@@ -37,6 +37,20 @@ router.put('/usecase/update', (req,res)=>{
             res.send({error:err})
         else
             res.send({msg:"Updated Successfully!"})
+    })
+})
+/* DELETE, Deleting Usecase;  */
+router.delete('/usecase/delete/:usecase_id', (req,res)=>{
+    sqliteDb.serialize(() => {
+        // Queries scheduled here will be serialized.
+        sqliteDb.run(`DELETE FROM analytics_cases WHERE id=${req.params.usecase_id}`)
+            .run(`DELETE FROM all_queries WHERE usecase_id=${req.params.usecase_id}`)
+            .run(`DELETE FROM all_plots WHERE usecase_id=${req.params.usecase_id}`, (err, row) => {
+                if(err)
+                    return res.send({error:err})
+                else
+                    res.send({msg:"Deleted Successfully"})
+            })
     })
 })
 /* Routers for usecase --end*/
@@ -71,9 +85,9 @@ router.post('/query/add/:usecase_id', urlencodedParser, (req,res)=>{
     sqliteDb.run(sql,[],(err)=>{
         console.log(err)
         if(err)
-            res.render('templates/config_usecase/add_query', {error:err,usecase_id:req.params.usecase_id})
+            res.render('templates/config_usecase/add_query', {error:[err],usecase_id:req.params.usecase_id})
         else
-            res.render('templates/config_usecase/add_query', {msg:"Added Successfully!",usecase_id:req.params.usecase_id})
+            res.render('templates/config_usecase/add_query', {message:["Added Successfully!"],usecase_id:req.params.usecase_id})
     })
 })
 

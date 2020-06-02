@@ -16,9 +16,9 @@
                         <label >Table Name :</label>
                         <input type="text" name="tablename" id="tablename-usecase" class="form-control -p3" value="{{result.tablename}}" required disabled><br>
                         <br>
-                        <button type="button" class="btn btn-outline-secondary" id="edit-usecase" onclick="return handleEditUsecase({{id}})">Edit</button>
+                        <button type="button" class="btn btn-outline-secondary" id="edit-usecase" onclick="return handleEditUsecase()">Edit</button>
                         <button type="submit" class="btn btn-outline-secondary" id="save-usecase" hidden>Save</button>
-                        <button type="button" class="btn btn-danger" id="del-usecase">Delete</button>
+                        <button type="button" class="btn btn-danger" id="del-usecase" usecase_id="{{usecase_id}}">Delete</button>
                     </form>
                 </div>
             </div>

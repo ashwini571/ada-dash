@@ -1,4 +1,4 @@
-function handleEditUsecase(id) {
+function handleEditUsecase() {
     document.getElementById('title-usecase').disabled = false
     document.getElementById('tablename-usecase').disabled = false
 
@@ -25,9 +25,9 @@ $(document).ready(function() {
 
     usecaseDelButton.addEventListener('click',(event)=>{
         event.preventDefault()
-        let id = element.id.slice(6)
+        let id = usecaseDelButton.getAttribute('usecase_id')
         if(window.confirm("Are you sure ?"))
-            delData(id)
+            delData("/config/usecase/delete/"+id,'usecase')
     })
     /*Update and delete for Usecase --END */
 

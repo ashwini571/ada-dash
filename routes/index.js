@@ -31,11 +31,11 @@ router.post('/add',urlencodedParser,(req,res)=>{
   sqliteDb.run(sql,[],(err)=>{
     console.log(err)
     if(err)
-      res.render('templates/add_usecase',{title:'Add Usecase', error:err})
+      res.render('templates/add_usecase',{title:'Add Usecase', error:[err]})
     else {
       /* Calling the Add_query function */
       req.params.id = req.body.id
-      res.render('templates/config_usecase/add_query', {title: 'Add Query', msg: "Created Successfully", usecase_id: req.body.id})
+      res.render('templates/config_usecase/add_query', {title: 'Add Query', message:["Created Successfully"], usecase_id: req.body.id})
     }
   })
 })

@@ -18,7 +18,7 @@ function createPlot(data,x_axis,y_axis)
         $.pivotUtilities.plotly_renderers)
     $("#output").pivotUI(modifiedData, {
         renderers: renderers,
-        rendererName: "Line Chart",
+        rendererName: "Bar Chart",
         cols:["time"],
         aggregatorName :"Sum",
         vals: [y_axis+"_count"],
@@ -26,7 +26,7 @@ function createPlot(data,x_axis,y_axis)
     },true)
 }
 
-// Fetching data for pivottable
+// Fetching data from a url by providing reqBody
 function getData(reqBody,url,callback) {
     /* Loader */
     document.getElementById("output").innerHTML = `<div class="loader"></div>`
@@ -64,7 +64,7 @@ function putData(reqBody,url) {
     })
 }
 // Delete function via fetch()
-function delData(url) {
+function delData(url,type) {
     let init = {
         method: "DELETE",
     }
@@ -74,7 +74,10 @@ function delData(url) {
         }).then((data) => {
         if (data.msg) {
             alert("Deleted Successfully!")
-            location.reload()
+            if(type==='usecase')
+                window.location.replace('/')
+            else
+                location.reload()
         }
         else
             alert(data.error)
