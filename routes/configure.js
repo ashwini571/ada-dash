@@ -57,14 +57,14 @@ router.delete('/usecase/delete/:usecase_id', (req,res)=>{
 
 /* Routers for queries  --start*/
 
-/*GET, See all queries */
+/* GET, See all queries */
 router.get('/all_queries/:usecase_id', (req, res )=> {
 
     /* fetching all cases from sqlite */
     let sql = `SELECT * FROM all_queries WHERE usecase_id = '${req.params.usecase_id}' `
     sqliteDb.all(sql,[],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
-        if(err || row.length==0)
+        if(err || (row!==undefined && row.length==0))
             return res.render('templates/config_usecase/all_queries',{error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
 
         res.render('templates/config_usecase/all_queries', { title:"All Queries", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
@@ -123,7 +123,18 @@ router.delete('/query/delete/:id', (req,res)=>{
 
 /* Routers for PLOTS  --start*/
 router.get('/all_plots/:usecase_id', (req,res)=>{
-    
+    /* fetching all cases from sqlite */
+    let sql = `SELECT ac.tablename,ac.table_columns,ap.* FROM all_plots as ap inner join analytics_cases as ac WHERE ap.usecase_id = '${req.params.usecase_id}' AND ac.id='${req.params.usecase_id}'`
+    sqliteDb.all(sql,[],(err,rows)=>{
+        /* row.length==0 so that it doesn't catch error in  row[0].title*/
+
+        if(err || (rows!==undefined && rows.length==0))
+            return res.render('templates/config_usecase/all_plots',{error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
+        rows.forEach((item)=>{
+            item.table_columns = item.table_columns.split(',')
+        })
+        res.render('templates/config_usecase/all_plots', { title:"All Plots", clusterName:clusterName,result:rows,usecase_id:req.params.usecase_id })
+    })
 })
 
 /*GET, Form-page for adding plots */
@@ -133,21 +144,19 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
         message.push(req.query.msg)
     if(req.query.error!==undefined)
         message.push(req.query.err)
-
-    /*Fetching tablename */
-    let sql=`SELECT tablename FROM analytics_cases WHERE id='${req.params.usecase_id}'`
+    /*Fetching tablename and columns */
+    let sql=`SELECT * FROM analytics_cases WHERE id='${req.params.usecase_id}'`
     sqliteDb.get(sql,[],(err,row)=>{
         if(err)
             return res.render('templates/error')
-        let query = `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${row.tablename}'`
-        redshiftClient.query(query, (error,result)=>{
-            if(error)
-                res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"Something went wrong", usecase_id:req.params.usecase_id})
-            else if(result.rows.length==0)
-                res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
-            else
-                res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:result.rows, usecase_id:req.params.usecase_id, message:message ,error:error })
-        })
+        else if( (row!==undefined && row.length==0))
+            res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
+        else{
+            row.table_columns = row.table_columns.split(',')
+            console.log(typeof row.table_columns)
+            res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:row.table_columns, usecase_id:req.params.usecase_id, message:message ,error:error })
+        }
+
     })
 })
 /* POST, generates sql for creating plots */

@@ -29,7 +29,10 @@ function createPlot(data,x_axis,y_axis)
 // Fetching data from a url by providing reqBody
 function getData(reqBody,url,callback) {
     /* Loader */
-    document.getElementById("output").innerHTML = `<div class="loader"></div>`
+    let output =  document.getElementById("output")
+    console.log(output)
+    if(output !== null)
+        output.innerHTML = `<div class="loader"></div>`
     let init ={
         method:"POST",
         headers: { 'Content-Type': 'application/json' },

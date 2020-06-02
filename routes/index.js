@@ -9,7 +9,7 @@ const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 
-/* GET home page. */
+/* GET, home page. */
 router.get('/', (req, res, next)=>{
 
   let sql = `SELECT id,title FROM analytics_cases`;
@@ -24,19 +24,29 @@ router.get('/add',(req,res)=>{
   res.render('templates/add_usecase',{title:'Add Usecase', clusterName:clusterName})
 })
 
-/* POST Adding Use cases */
+/* POST, Adding Use cases */
 router.post('/add',urlencodedParser,(req,res)=>{
+  let query = `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${req.body.tablename}'`
 
-  let sql = `INSERT INTO analytics_cases(id,title,tablename) VALUES("${req.body.id}","${req.body.title}","${req.body.tablename}")`
-  sqliteDb.run(sql,[],(err)=>{
-    console.log(err)
-    if(err)
-      res.render('templates/add_usecase',{title:'Add Usecase', error:[err]})
-    else {
-      /* Calling the Add_query function */
-      req.params.id = req.body.id
-      res.render('templates/config_usecase/add_query', {title: 'Add Query', message:["Created Successfully"], usecase_id: req.body.id})
-    }
+  redshiftClient.query(query, (error,result)=> {
+      /* Checks for error and empty rows */
+      if(error  || (result.rows!==undefined && result.rows.length===0))
+        res.render('templates/add_usecase', {title: 'Add Usecase', error:["Something went wrong!"]})
+      else{
+        /* Saving column_names in sqlite table */
+          let columnNames = Array.prototype.map.call(result.rows, function(item) { return item.column_name; }).join(",")
+          let sql = `INSERT INTO analytics_cases(id,title,tablename,table_columns) VALUES("${req.body.id}","${req.body.title}","${req.body.tablename}","${columnNames}")`
+          sqliteDb.run(sql,[],(err)=>{
+              console.log(err)
+              if(err)
+                res.render('templates/add_usecase',{title:'Add Usecase', error:[err]})
+              else {
+                  /* Calling the Add_query function */
+                  req.params.id = req.body.id
+                  res.render('templates/config_usecase/add_query', {title: 'Add Query', message:["Created Successfully"], usecase_id: req.body.id})
+              }
+          })
+      }
   })
 })
 
@@ -44,7 +54,7 @@ router.get('/redshift_config', (req,res)=>{
   res.render('templates/edit_redshift_config',{title:'Redshift Config.'})
 })
 
-/*GET Search for usecases */
+/*GET, Search for usecases */
 router.get('/search', (req,res)=>{
 
   let sql = `SELECT * FROM analytics_cases WHERE title LIKE '%${req.query.key}%' OR id LIKE '${req.query.key}' `

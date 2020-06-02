@@ -11,6 +11,9 @@
 
                             <ol>
                                 <li class="text-muted" style="margin-bottom:10px;">
+
+                                </li>
+                                <li class="text-muted" style="margin-bottom:10px;">
                                     Generated sql can be modified with custom WHERE and LIKE clause
                                 </li>
                             </ol>
@@ -39,7 +42,7 @@
                                 <div class="col-sm-10">
                                     <select class="form-control" name="x_axis" id="x_axis_form" required>
                                         {{#each result}}
-                                            <option value="{{column_name}}" >{{column_name}}</option>
+                                            <option value="{{this}}" >{{this}}</option>
                                         {{/each}}
                                     </select>
                                     <small id="y_axis_help" class="form-text text-muted">Choose only date-time field.</small>
@@ -50,7 +53,7 @@
                                 <div class="col-sm-10">
                                     <select class="form-control" name="y_axis" id="y_axis_form" required>
                                        {{#each result}}
-                                           <option value="{{column_name}}" >{{column_name}}</option>
+                                           <option value="{{this}}" >{{this}}</option>
                                        {{/each}}
                                     </select>
                                 </div>
@@ -78,7 +81,7 @@
                                     <textarea type="text" name="gen_sql" class="form-control -p3" id="gen_sql" rows=5></textarea>
                                 </div>
                             </div>
-                            <button class="btn btn-md btn-primary" type="button" id="gen_sql_btn">Generate Sql</button>
+                            <button class="btn btn-md btn-primary" type="button" id="gen_sql_btn_add">Generate Sql</button>
                             <button class="btn btn-md btn-primary" type="submit" id="save_btn" style="display: none">Save</button>
                         </form>
                     </div>

@@ -1,0 +1,111 @@
+{{#> base}}
+    {{#*inline "head-block" }}
+        <link rel="stylesheet" href="/public/css/styles.css">
+    {{/inline}}
+    {{#*inline "body-block" }}
+        {{> sidebar }}
+        <div class="content-container">
+            <div class="container" >
+                <br><br>
+                <div class="row">
+                    <a class="btn btn-secondary" href="/config/plot/add/{{usecase_id}}">Add Plot</a>
+                </div>
+                <br><br>
+            </div>
+            <div class="container">
+                <div class="accordion" id="accordionExample">
+                    {{#each result }}
+                        <div class="card">
+                            <div class="card-header" id="heading{{id}}">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
+                                        {{title}}
+                                    </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapse{{id}}" class="collapse" aria-labelledby="heading{{id}}" data-parent="#accordionExample">
+                                <div class="card-body">
+
+                                    <form id="gen_sql_form">
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Table :</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="tablename" id="tablename_form" readonly class="form-control" value="{{tablename}}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Title :</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="title" id="title_form"  class="form-control" value="{{title}}" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label  class="col-sm-2 col-form-label">X-axis :</label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control" name="x_axis" id="x_axis_form" required>
+                                                    {{#each table_columns}}
+                                                        <option value="{{this}}" {{#ifCond ../x_axis '==' this }}selected{{/ifCond}} >{{this}}</option>
+                                                    {{/each}}
+                                                </select>
+                                                <small id="y_axis_help" class="form-text text-muted">Choose only date-time field.</small>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label  class="col-sm-2 col-form-label">Y-axis :</label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control" name="y_axis" id="y_axis_form" required>
+                                                    {{#each table_columns}}
+                                                        <option value="{{this}}" {{#ifCond ../y_axis '==' this }}selected{{/ifCond}} >{{this}}</option>
+                                                    {{/each}}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label  class="col-sm-4 col-form-label">Date-Time Format :</label>
+                                            <div class="col-sm-8" >
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="date_time_format"  value="epoch" {{#ifCond date_time_format '==' "epoch" }}checked{{/ifCond}} >
+                                                    <label class="form-check-label">
+                                                        Epoch
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="date_time_format" value="timestamp" {{#ifCond date_time_format '==' "timestamp" }}checked{{/ifCond}}>
+                                                    <label class="form-check-label">
+                                                        Timestamp
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row" id="sql_block">
+                                            <label  class="col-sm-2 col-form-label">Sql :</label>
+                                            <div class="col-sm-10">
+                                                <textarea type="text" name="gen_sql" class="form-control -p3" id="gen_sql" rows=5>{{query}}</textarea>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-md btn-primary" type="button" id="gen_sql_btn_edit">Generate Sql</button>
+                                        <button class="btn btn-md btn-primary" type="submit" id="save_btn">Save</button>
+                                        <button type="button" class="btn btn-danger del-button" id="delete-plot{{id}}">Delete</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+
+
+            </div>
+
+        </div>
+    {{/inline}}
+    {{#*inline "scripts-block" }}
+        <script>
+            $("#plots").addClass("active")
+        </script>
+        <script src="/public/js/utils_client.js"></script>
+        <script src="/public/js/crud_plot_client.js"></script>
+    {{/inline}}
+{{/base}}
+
