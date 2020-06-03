@@ -16,7 +16,6 @@ router.get('/', (req, res, next)=>{
   sqliteDb.all(sql,(err,rows)=>{
     res.render('templates/index',{error:err, result:rows, title:'Home',clusterName:clusterName})
   })
-
 })
 
 /* GET Form for adding  usecase */
@@ -26,17 +25,17 @@ router.get('/add',(req,res)=>{
 
 /* POST, Adding Use cases */
 router.post('/add',urlencodedParser,(req,res)=>{
-  let query = `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${req.body.tablename}'`
+  let query = `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = $1`
 
-  redshiftClient.query(query, (error,result)=> {
+  redshiftClient.parameterizedQuery(query, [req.body.tablename],(error,result)=> {
       /* Checks for error and empty rows */
       if(error  || (result.rows!==undefined && result.rows.length===0))
-        res.render('templates/add_usecase', {title: 'Add Usecase', error:["Something went wrong!"]})
+        res.render('templates/add_usecase', {title: 'Add Usecase', error:["Table does not exist!"]})
       else{
         /* Saving column_names in sqlite table */
           let columnNames = Array.prototype.map.call(result.rows, function(item) { return item.column_name; }).join(",")
-          let sql = `INSERT INTO analytics_cases(id,title,tablename,table_columns) VALUES("${req.body.id}","${req.body.title}","${req.body.tablename}","${columnNames}")`
-          sqliteDb.run(sql,[],(err)=>{
+          let sql = `INSERT INTO analytics_cases(id,title,tablename,table_columns) VALUES(?,?,?,?)`
+          sqliteDb.run(sql,[req.body.id, req.body.title, req.body.tablename, columnNames],(err)=>{
               console.log(err)
               if(err)
                 res.render('templates/add_usecase',{title:'Add Usecase', error:[err]})
@@ -56,11 +55,9 @@ router.get('/redshift_config', (req,res)=>{
 
 /*GET, Search for usecases */
 router.get('/search', (req,res)=>{
-
-  let sql = `SELECT * FROM analytics_cases WHERE title LIKE '%${req.query.key}%' OR id LIKE '${req.query.key}' `
-
-  sqliteDb.all(sql,(err,rows)=>{
-    console.log(rows.length)
+  let sql = `SELECT * FROM analytics_cases WHERE title LIKE '%${req.query.key}%' OR id =?`
+  sqliteDb.all(sql,[req.query.key],(err,rows)=>{
+      console.log(err)
     res.render('templates/index',{error:err, result:rows, title:'Search Results',clusterName:clusterName})
   })
 })

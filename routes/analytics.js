@@ -49,13 +49,19 @@ const decideTimeDependency = (row)=>{
 /* GET,  Shows Options For Different Types of Query and plots at Analytics Page */
 router.get('/:usecase_id', (req, res )=> {
     let error = []
+    /*Verifiying usecase id */
+    sqliteDb.get(`SELECT * FROM analytics_cases WHERE id=?`, [req.params.usecase_id], (err,row)=>{
+        if(err || (row===undefined))
+            return res.render('templates/error')
+    })
+
     /* fetching all queries from sqlite */
     let sqlForQueries = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,
-    aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id="${req.params.usecase_id}" AND aq.usecase_id="${req.params.usecase_id}" `
+    aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id=? AND aq.usecase_id=? `
     /* fetching all plots from sqlite */
-    let sqlForPlots = `SELECT ap.id,ap.usecase_id,ap.query,ap.title,ap.x_axis,ap.y_axis FROM analytics_cases as ac INNER JOIN all_plots as ap ON ac.id="${req.params.usecase_id}" AND ap.usecase_id="${req.params.usecase_id}" `
+    let sqlForPlots = `SELECT ap.id,ap.usecase_id,ap.query,ap.title,ap.x_axis,ap.y_axis FROM analytics_cases as ac INNER JOIN all_plots as ap ON ac.id=? AND ap.usecase_id=? `
 
-    sqliteDb.all(sqlForQueries,[],(errQuery,resQuery)=>{
+    sqliteDb.all(sqlForQueries,[req.params.usecase_id, req.params.usecase_id],(errQuery,resQuery)=>{
         if (errQuery)
             error.push("Error rendering queries")
         else {
@@ -63,12 +69,15 @@ router.get('/:usecase_id', (req, res )=> {
             extractVar(resQuery)
             decideTimeDependency(resQuery)
         }
-        sqliteDb.all(sqlForPlots,[],(errPlot,resPlot)=>{
+        sqliteDb.all(sqlForPlots,[req.params.usecase_id, req.params.usecase_id],(errPlot,resPlot)=>{
             if(errPlot)
                 error.push("Error rendering plots")
             else
                 decideTimeDependency(resPlot)
             let title = (resQuery.length !== 0)?resQuery[0].usecase_title:""
+            // /* Either both query returns error or both returns empty results */
+            // if((errQuery && errPlot) || (resQuery!==undefined && resQuery.length===0 && resPlot!==undefined && resPlot.length===0))
+            //     res.render('templates/error')
             res.render('templates/analytics', {clusterName: clusterName,title:title,error:error, resQuery:resQuery,resPlot:resPlot, usecase_id:req.params.usecase_id})
         })
     })
@@ -83,8 +92,8 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     let timePeriod = Number(req.body.timePeriod)
 
     /* brings redshift query from sqlite */
-    let sql = `SELECT * FROM all_queries WHERE id='${id}'`
-    sqliteDb.get(sql,[],(err,row)=>{
+    let sql = `SELECT * FROM all_queries WHERE id=?`
+    sqliteDb.get(sql,[id],(err,row)=>{
 
         if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
             res.send({error:"Something went wrong!"})
@@ -96,7 +105,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
             /* Adding User input to the query */
             if(row.type === 'filter')
                 queryRedshift = userInputToQuery(queryRedshift,input)
-
+            /* Adding user input time Period */
             queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
             let cachedData = myCache.get(key)
 
@@ -130,8 +139,8 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
     let timePeriod = Number(req.body.timePeriod)
 
     /* brings redshift query from sqlite */
-    let sql = `SELECT * FROM all_plots WHERE id='${id}'`
-    sqliteDb.get(sql,[],(err,row)=>{
+    let sql = `SELECT * FROM all_plots WHERE id=?`
+    sqliteDb.get(sql,[id],(err,row)=>{
 
         if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
             res.send({error:"Something went wrong!"})
@@ -166,7 +175,6 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
             }
         }
     })
-
 })
 
 module.exports = router

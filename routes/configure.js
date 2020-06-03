@@ -16,8 +16,8 @@ const clusterName = redshift.clusterName
 router.get('/usecase/:usecase_id', (req, res )=> {
 
     /* fetching all cases from sqlite */
-    let sql = `SELECT * FROM analytics_cases WHERE id = '${req.params.usecase_id}' `
-    sqliteDb.get(sql,[],(err,row)=>{
+    let sql = `SELECT * FROM analytics_cases WHERE id = ?`
+    sqliteDb.get(sql,[req.params.usecase_id],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
         console.log(row)
         if(err || (row!==undefined && row.length==0))
@@ -29,9 +29,9 @@ router.get('/usecase/:usecase_id', (req, res )=> {
 
 /*PUT, Edit-usecase form submisson */
 router.put('/usecase/update', (req,res)=>{
-    let sql = `UPDATE analytics_cases SET title="${req.body.title}", tablename="${req.body.tablename}" WHERE id='${req.body.id}'`
+    let sql = `UPDATE analytics_cases SET title=?, tablename=? WHERE id=?`
     console.log(sql)
-    sqliteDb.run(sql,[],(err)=>{
+    sqliteDb.run(sql,[req.body.title, req.body.tablename, req.body.id],(err)=>{
         console.log(err)
         if(err)
             res.send({error:err})
@@ -61,8 +61,8 @@ router.delete('/usecase/delete/:usecase_id', (req,res)=>{
 router.get('/all_queries/:usecase_id', (req, res )=> {
 
     /* fetching all cases from sqlite */
-    let sql = `SELECT * FROM all_queries WHERE usecase_id = '${req.params.usecase_id}' `
-    sqliteDb.all(sql,[],(err,row)=>{
+    let sql = `SELECT * FROM all_queries WHERE usecase_id = ?`
+    sqliteDb.all(sql,[req.params.usecase_id],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
         if(err || (row!==undefined && row.length==0))
             return res.render('templates/config_usecase/all_queries',{error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
@@ -73,16 +73,15 @@ router.get('/all_queries/:usecase_id', (req, res )=> {
 
 /* GET, Form page for adding Query for usecase_id */
 router.get('/query/add/:usecase_id', (req,res)=>{
-res.render('templates/config_usecase/add_query',{usecase_id:req.params.usecase_id, title:'Add'})
+    res.render('templates/config_usecase/add_query',{usecase_id:req.params.usecase_id, title:'Add'})
 })
-
 
 /* POST, Inserting Queries;  */
 router.post('/query/add/:usecase_id', urlencodedParser, (req,res)=>{
 
     console.log(req.body)
-    let sql = `INSERT INTO all_queries(usecase_id,type,title,query,description) VALUES("${req.params.usecase_id}","${req.body.type}","${req.body.title}","${req.body.query}","${req.body.description}")`
-    sqliteDb.run(sql,[],(err)=>{
+    let sql = `INSERT INTO all_queries(usecase_id,type,title,query,description) VALUES(?,?,?,?,?)`
+    sqliteDb.run(sql,[req.params.usecase_id, req.body.type, req.body.title, req.body.query, req.body.description],(err)=>{
         console.log(err)
         if(err)
             res.render('templates/config_usecase/add_query', {error:[err],usecase_id:req.params.usecase_id})
@@ -94,9 +93,9 @@ router.post('/query/add/:usecase_id', urlencodedParser, (req,res)=>{
 /* PUT, Updating Queries;  */
 router.put('/query/update', urlencodedParser, (req,res)=>{
 
-    let sql = `UPDATE all_queries SET type="${req.body.type}", title="${req.body.title}", query="${req.body.query}", description="${req.body.description}" WHERE id=${req.body.id}`
+    let sql = `UPDATE all_queries SET type=?, title=?, query=?, description=? WHERE id=?`
     console.log(sql)
-    sqliteDb.run(sql,[],(err)=>{
+    sqliteDb.run(sql,[req.body.type, req.body.title, req.body.query, req.body.description, req.body.id ],(err)=>{
         console.log(err)
         if(err)
             res.send({error:err})
@@ -109,8 +108,8 @@ router.put('/query/update', urlencodedParser, (req,res)=>{
 /* DELETE, Deleting Queries;  */
 router.delete('/query/delete/:id', (req,res)=>{
 
-    let sql=`DELETE FROM all_queries WHERE id=${req.params.id}`
-    sqliteDb.run(sql,[],(err)=>{
+    let sql=`DELETE FROM all_queries WHERE id=?`
+    sqliteDb.run(sql,[req.params.id],(err)=>{
         console.log(err)
         if(err)
             res.send({error:err})
@@ -124,8 +123,8 @@ router.delete('/query/delete/:id', (req,res)=>{
 /* Routers for PLOTS  --start*/
 router.get('/all_plots/:usecase_id', (req,res)=>{
     /* fetching all cases from sqlite */
-    let sql = `SELECT ac.tablename,ac.table_columns,ap.* FROM all_plots as ap inner join analytics_cases as ac WHERE ap.usecase_id = '${req.params.usecase_id}' AND ac.id='${req.params.usecase_id}'`
-    sqliteDb.all(sql,[],(err,rows)=>{
+    let sql = `SELECT ac.tablename,ac.table_columns,ap.* FROM all_plots as ap inner join analytics_cases as ac WHERE ap.usecase_id=? AND ac.id=?`
+    sqliteDb.all(sql,[req.params.usecase_id,req.params.usecase_id],(err,rows)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
 
         if(err || (rows!==undefined && rows.length==0))
@@ -145,8 +144,8 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
     if(req.query.error!==undefined)
         message.push(req.query.err)
     /*Fetching tablename and columns */
-    let sql=`SELECT * FROM analytics_cases WHERE id='${req.params.usecase_id}'`
-    sqliteDb.get(sql,[],(err,row)=>{
+    let sql=`SELECT * FROM analytics_cases WHERE id=?`
+    sqliteDb.get(sql,[req.params.usecase_id],(err,row)=>{
         if(err)
             return res.render('templates/error')
         else if( (row!==undefined && row.length==0))
@@ -156,7 +155,6 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
             console.log(typeof row.table_columns)
             res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:row.table_columns, usecase_id:req.params.usecase_id, message:message ,error:error })
         }
-
     })
 })
 /* POST, generates sql for creating plots */
@@ -169,14 +167,13 @@ router.post('/plot/gen_sql', (req,res)=>{
     else{
         sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',cast(${req.body.x_axis} AS timestamp)) AS time FROM marvin.${req.body.tablename} WHERE time>getdate()-$timePeriod GROUP BY time order by time;`
     }
-
     res.send({sql:sql})
 })
 /* POST, Insert new plot */
 router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
     console.log(req.body)
-    let sql = `INSERT INTO all_plots(usecase_id,x_axis,y_axis,date_time_format,title,query) VALUES("${req.params.usecase_id}", "${req.body.x_axis}", "${req.body.y_axis}", "${req.body.date_time_format}", "${req.body.title}", "${req.body.gen_sql}")`
-    sqliteDb.run(sql,[], (err)=>{
+    let sql = `INSERT INTO all_plots(usecase_id,x_axis,y_axis,date_time_format,title,query) VALUES(?, ?, ?, ?, ?, ?)`
+    sqliteDb.run(sql,[req.params.usecase_id,req.body.x_axis,req.body.y_axis,req.body.date_time_format,req.body.title,req.body.gen_sql], (err)=>{
         if(err){
          let error = err
          res.redirect('/config/plot/add' +req.params.usecase_id+'/?error=' + error)
@@ -190,21 +187,20 @@ router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
 /* PUT, Updating Plot;  */
 router.put('/plot/update', urlencodedParser, (req,res)=>{
 
-    let sql = `UPDATE all_plots SET title="${req.body.title}", x_axis="${req.body.x_axis}", y_axis="${req.body.y_axis}", date_time_format="${req.body.date_time_format}", query="${req.body.query}" WHERE id=${req.body.id}`
-    sqliteDb.run(sql,[],(err)=>{
+    let sql = `UPDATE all_plots SET title=?, x_axis=?, y_axis=?, date_time_format=?, query=? WHERE id=?`
+    sqliteDb.run(sql,[req.body.title, req.body.x_axis, req.body.y_axis, req.body.date_time_format,req.body.query,req.body.id ],(err)=>{
         console.log(err)
         if(err)
             res.send({error:err})
         else
             res.send({msg:"Updated Successfully!"})
     })
-
 })
 /* DELETE, Deleting Queries;  */
 router.delete('/plot/delete/:id', (req,res)=>{
 
-    let sql=`DELETE FROM all_plots WHERE id=${req.params.id}`
-    sqliteDb.run(sql,[],(err)=>{
+    let sql=`DELETE FROM all_plots WHERE id=?`
+    sqliteDb.run(sql,[req.params.id],(err)=>{
         console.log(err)
         if(err)
             res.send({error:err})
