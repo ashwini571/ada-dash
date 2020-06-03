@@ -30,7 +30,7 @@ $(document).ready(function() {
         })
     })
 
-    let delButtonsQuery = document.getElementsByClassName('del-button')
+    let delButtonsQuery = document.getElementsByClassName('del-btn-query')
     Array.from(delButtonsQuery).forEach((element) => {
         element.addEventListener('click', (event) => {
             event.preventDefault()

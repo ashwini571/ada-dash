@@ -187,6 +187,18 @@ router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
         }
     })
 })
+/* DELETE, Deleting Queries;  */
+router.delete('/plot/delete/:id', (req,res)=>{
+
+    let sql=`DELETE FROM all_plots WHERE id=${req.params.id}`
+    sqliteDb.run(sql,[],(err)=>{
+        console.log(err)
+        if(err)
+            res.send({error:err})
+        else
+            res.send({msg:"Deleted Successfully!"})
+    })
+})
 
 /* Routers for PLOT  --end*/
 

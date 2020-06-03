@@ -1,6 +1,7 @@
 $(document).ready(function() {
     /* Generate Sql for Editing plot */
     let generateSqlButtonsForEdit = document.getElementsByClassName('generate')
+    let delBtnPlot = document.getElementsByClassName('del-btn-plot')
     Array.from(generateSqlButtonsForEdit).forEach((element) => {
         element.addEventListener('click', (event) => {
             event.preventDefault()
@@ -20,4 +21,15 @@ $(document).ready(function() {
             })
         })
     })
+
+    //Delete btn EventListener
+    Array.from(delBtnPlot).forEach((element) => {
+        element.addEventListener('click', (event) => {
+            event.preventDefault()
+            let id = element.id.slice(11)
+            if(window.confirm("Are you sure ?"))
+                delData("/config/plot/delete/"+id,'query')
+        })
+    })
+
 })
