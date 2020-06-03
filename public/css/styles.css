@@ -376,3 +376,13 @@ ul li a.active {
     cursor: default;
     transition: .3s;
 }
+.tags{
+    background-color: antiquewhite;
+    color: #7b7b7b;
+    border-radius: 4px;
+    /*line-height: 20px;*/
+    padding: 4px 8px;
+    font-size: 13px;
+    position: relative;
+    /*top: -1px;*/
+}
