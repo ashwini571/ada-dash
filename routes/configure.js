@@ -187,6 +187,19 @@ router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
         }
     })
 })
+/* PUT, Updating Plot;  */
+router.put('/plot/update', urlencodedParser, (req,res)=>{
+
+    let sql = `UPDATE all_plots SET title="${req.body.title}", x_axis="${req.body.x_axis}", y_axis="${req.body.y_axis}", date_time_format="${req.body.date_time_format}", query="${req.body.query}" WHERE id=${req.body.id}`
+    sqliteDb.run(sql,[],(err)=>{
+        console.log(err)
+        if(err)
+            res.send({error:err})
+        else
+            res.send({msg:"Updated Successfully!"})
+    })
+
+})
 /* DELETE, Deleting Queries;  */
 router.delete('/plot/delete/:id', (req,res)=>{
 

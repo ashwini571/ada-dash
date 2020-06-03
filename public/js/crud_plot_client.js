@@ -2,6 +2,7 @@ $(document).ready(function() {
     /* Generate Sql for Editing plot */
     let generateSqlButtonsForEdit = document.getElementsByClassName('generate')
     let delBtnPlot = document.getElementsByClassName('del-btn-plot')
+    let saveBtn = document.getElementsByClassName('save-btn-plot')
     Array.from(generateSqlButtonsForEdit).forEach((element) => {
         element.addEventListener('click', (event) => {
             event.preventDefault()
@@ -21,7 +22,22 @@ $(document).ready(function() {
             })
         })
     })
-
+    Array.from(saveBtn).forEach((element)=>{
+        element.addEventListener('click', (event)=>{
+            event.preventDefault()
+            let id = element.id
+            let textareaSql = document.getElementById('query'+id)
+            let reqBody = {
+                id:id,
+                title: document.getElementById('title'+id).value,
+                x_axis: $("#x_axis"+id+" :selected").val(),
+                y_axis: $("#y_axis"+id+" :selected").val(),
+                date_time_format: $("input[name=date_time_format"+id+"]:checked").val(),
+                query: textareaSql.value
+            }
+            putData(reqBody,"/config/plot/update")
+        })
+    })
     //Delete btn EventListener
     Array.from(delBtnPlot).forEach((element) => {
         element.addEventListener('click', (event) => {
@@ -31,5 +47,4 @@ $(document).ready(function() {
                 delData("/config/plot/delete/"+id,'query')
         })
     })
-
 })

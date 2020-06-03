@@ -109,7 +109,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                         res.send({error:"No data found"})
                     else {
                         console.log("from_redshift")
-                        myCache.set(key,result.rows,86400*timePeriod)
+                        myCache.set(key,result.rows,86400)
                         res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched})
                     }
                 })
@@ -154,7 +154,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
                         res.send({error:"No data found"})
                     else {
                         console.log("from_redshift")
-                        myCache.set(key,result.rows,86400*timePeriod)
+                        myCache.set(key,result.rows,86400)
                         res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched,x_axis:row.x_axis,y_axis:row.y_axis})
                     }
                 })
