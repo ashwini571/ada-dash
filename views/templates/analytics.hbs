@@ -11,17 +11,20 @@
             <br><br>
             <div class="row">
                 <div class="col-10" >
-                    {{#if resQuery}}
+
                         <h3 style="color: #3b3b3b;font-family: 'Hammersmith One', sans-serif;font-weight: bold;border-left:5px solid #000000;padding-left: 10px" id="heading">
                             {{title}}
+
+                            {{#if countTimeDependency}}
                             in last
                             <input  style="width: 85px" list="periods" name="period" id="period" value="7">
                             <datalist id="periods">
                                 <!-- Options appended by javascript -->
                             </datalist>
                             days
+                            {{/if}}
                         </h3>
-                    {{/if}}
+
                 </div>
                 <div class="col-2">
                     <div class="flex">
@@ -32,7 +35,7 @@
             <br>
         </div>
         <hr style=" border: 0; height: 1px;background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));">
-        <br>
+
         <div class="container-fluid" style="width: 90%">
             <div class="row">
                 <div class="col-md-4">
@@ -76,6 +79,12 @@
                         {{/each}}
 
                     </ul>
+                    <div class="icon">
+                        <div class="block">
+                            <div class="circle" style="background: yellow"></div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col-md-8">
                     <div class="browser">
@@ -116,9 +125,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.22.0/plotly_renderers.min.js"></script>
         
         <!-- Custom Scripts -->
+        <script src="/public/js/custom.js"></script>
         <script src="/public/js/utils_client.js"></script>
         <script src="/public/js/analytics_client.js"></script>
-        <script src="/public/js/custom.js"></script>
     {{/inline}}
 
 

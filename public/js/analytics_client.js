@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+
     // Data Targets
     let output = document.getElementById('output')
     let title = document.getElementById('heading')
@@ -19,8 +20,7 @@ $(document).ready(function() {
             let rows = JSON.parse(data.rows)
             output.innerText = "Count:-" + rows[0].count
         }
-        else if(type === 'plot')
-        {
+        else if(type === 'plot') {
             createPlot(data,data.x_axis,data.y_axis)
         }
         else {
@@ -87,11 +87,12 @@ $(document).ready(function() {
                  })
             }
             else /* Else we send the reqBody */{
+
                 let reqBody ={
                     id:element.id,
                     usecase_id:element.getAttribute('usecase_id'),
                     type:queryType,
-                    timePeriod:timePeriod.value
+                    timePeriod:(timePeriod === null || timePeriod===undefined)?0:timePeriod.value
                 }
                 getAndShowData(reqBody,"/analytics/getData")
             }
@@ -112,5 +113,7 @@ $(document).ready(function() {
             getAndShowData(reqBody,"/analytics/getPlotdata")
         })
     })
+    // Auto Selecting first query of count type
+    document.querySelectorAll("a[query_type='count']")[0].click()
 
 })

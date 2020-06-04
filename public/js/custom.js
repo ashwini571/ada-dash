@@ -33,7 +33,7 @@ $(document).ready(function(){
                 setTimeout(function () {
                     console.log(1)
                     element.getElementsByClassName('block')[0].classList.remove("flash")
-                },1000)
+                },1500)
             }
         })
     })

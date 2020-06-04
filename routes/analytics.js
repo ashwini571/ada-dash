@@ -38,48 +38,49 @@ const userInputToQuery = (query,input)=>{
 }
 
 const decideTimeDependency = (row)=>{
+   let countOfTimeDependency = 0
    row.forEach((element)=>{
-       if(element.query.search("\\$timePeriod")!==-1)
+       if(element.query.search("\\$timePeriod")!==-1){
            element.time_dependent = 1
+            countOfTimeDependency += 1
+       }
        else
            element.time_dependent = 0
    })
+    return countOfTimeDependency
 }
 
 /* GET,  Shows Options For Different Types of Query and plots at Analytics Page */
 router.get('/:usecase_id', (req, res )=> {
-    let error = []
+    let error = [],title,countTimeDependency = 0
     /*Verifiying usecase id */
     sqliteDb.get(`SELECT * FROM analytics_cases WHERE id=?`, [req.params.usecase_id], (err,row)=>{
         if(err || (row===undefined))
             return res.render('templates/error')
-    })
+        else{
+            title = row.title
+            /* fetching all queries from sqlite */
+            let sqlForQueries = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id=? AND aq.usecase_id=? `
+            /* fetching all plots from sqlite */
+            let sqlForPlots = `SELECT ap.id,ap.usecase_id,ap.query,ap.title,ap.x_axis,ap.y_axis FROM analytics_cases as ac INNER JOIN all_plots as ap ON ac.id=? AND ap.usecase_id=? `
 
-    /* fetching all queries from sqlite */
-    let sqlForQueries = `SELECT aq.id,ac.id as usecase_id, ac.title as usecase_title,ac.tablename, aq.title as query_title, aq.type,
-    aq.query FROM analytics_cases as ac INNER JOIN all_queries as aq ON ac.id=? AND aq.usecase_id=? `
-    /* fetching all plots from sqlite */
-    let sqlForPlots = `SELECT ap.id,ap.usecase_id,ap.query,ap.title,ap.x_axis,ap.y_axis FROM analytics_cases as ac INNER JOIN all_plots as ap ON ac.id=? AND ap.usecase_id=? `
-
-    sqliteDb.all(sqlForQueries,[req.params.usecase_id, req.params.usecase_id],(errQuery,resQuery)=>{
-        if (errQuery)
-            error.push("Error rendering queries")
-        else {
-            /*Extracting variables from query enclosed under "{ }" */
-            extractVar(resQuery)
-            decideTimeDependency(resQuery)
+            sqliteDb.all(sqlForQueries,[req.params.usecase_id, req.params.usecase_id],(errQuery,resQuery)=>{
+                if (errQuery)
+                    error.push("Error rendering queries")
+                else {
+                    /*Extracting variables from query enclosed under "{ }" */
+                    extractVar(resQuery)
+                    countTimeDependency += decideTimeDependency(resQuery)
+                }
+                sqliteDb.all(sqlForPlots,[req.params.usecase_id, req.params.usecase_id],(errPlot,resPlot)=>{
+                    if(errPlot)
+                        error.push("Error rendering plots")
+                    else
+                        countTimeDependency += decideTimeDependency(resPlot)
+                    res.render('templates/analytics', {clusterName: clusterName,title:title,error:error,countTimeDependency:countTimeDependency, resQuery:resQuery,resPlot:resPlot, usecase_id:req.params.usecase_id})
+                })
+            })
         }
-        sqliteDb.all(sqlForPlots,[req.params.usecase_id, req.params.usecase_id],(errPlot,resPlot)=>{
-            if(errPlot)
-                error.push("Error rendering plots")
-            else
-                decideTimeDependency(resPlot)
-            let title = (resQuery.length !== 0)?resQuery[0].usecase_title:""
-            // /* Either both query returns error or both returns empty results */
-            // if((errQuery && errPlot) || (resQuery!==undefined && resQuery.length===0 && resPlot!==undefined && resPlot.length===0))
-            //     res.render('templates/error')
-            res.render('templates/analytics', {clusterName: clusterName,title:title,error:error, resQuery:resQuery,resPlot:resPlot, usecase_id:req.params.usecase_id})
-        })
     })
 })
 
@@ -157,6 +158,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
 
                 redshiftClient.query(queryRedshift, (error,result)=>{
                     console.log(error)
+                    console.log(result)
                     if(error)
                         res.send({error:"Something went wrong"})
                     else if(result.rows.length===0)

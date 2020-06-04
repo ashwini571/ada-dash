@@ -43,9 +43,9 @@ router.put('/usecase/update', (req,res)=>{
 router.delete('/usecase/delete/:usecase_id', (req,res)=>{
     sqliteDb.serialize(() => {
         // Queries scheduled here will be serialized.
-        sqliteDb.run(`DELETE FROM analytics_cases WHERE id=${req.params.usecase_id}`)
-            .run(`DELETE FROM all_queries WHERE usecase_id=${req.params.usecase_id}`)
-            .run(`DELETE FROM all_plots WHERE usecase_id=${req.params.usecase_id}`, (err, row) => {
+        sqliteDb.run(`DELETE FROM analytics_cases WHERE id='${req.params.usecase_id}'`)
+            .run(`DELETE FROM all_queries WHERE usecase_id='${req.params.usecase_id}'`)
+            .run(`DELETE FROM all_plots WHERE usecase_id='${req.params.usecase_id}'`, (err, row) => {
                 if(err)
                     return res.send({error:err})
                 else
@@ -162,10 +162,10 @@ router.post('/plot/gen_sql', (req,res)=>{
     let sql
     console.log(req.body)
     if(req.body.date_time_format == 'epoch'){
-        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second') AS time FROM marvin.${req.body.tablename} WHERE time>getdate()-$timePeriod GROUP BY time order by time;`
+        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second') AS time FROM marvin.${req.body.tablename} WHERE (timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second')>getdate()-$timePeriod GROUP BY time order by time;`
     }
     else{
-        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',cast(${req.body.x_axis} AS timestamp)) AS time FROM marvin.${req.body.tablename} WHERE time>getdate()-$timePeriod GROUP BY time order by time;`
+        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',cast(${req.body.x_axis} AS timestamp)) AS time FROM marvin.${req.body.tablename} WHERE ${req.body.x_axis}>getdate()-$timePeriod GROUP BY time order by time;`
     }
     res.send({sql:sql})
 })
@@ -196,7 +196,7 @@ router.put('/plot/update', urlencodedParser, (req,res)=>{
             res.send({msg:"Updated Successfully!"})
     })
 })
-/* DELETE, Deleting Queries;  */
+/* DELETE, Deleting Plot;  */
 router.delete('/plot/delete/:id', (req,res)=>{
 
     let sql=`DELETE FROM all_plots WHERE id=?`
