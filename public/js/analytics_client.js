@@ -16,7 +16,6 @@ $(document).ready(function() {
     function parseDataToDom(data, type) {
         clearCard()
         if (type === 'count') {
-            console.log(title.innerText)
             let rows = JSON.parse(data.rows)
             output.innerText = "Count:-" + rows[0].count
         }

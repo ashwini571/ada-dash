@@ -37,10 +37,21 @@ $(document).ready(function(){
             }
         })
     })
+
+    /* Listeners for Maximize button */
+    let maximizeBtn = document.getElementById('maximize')
+    maximizeBtn.addEventListener('click',(event)=>{
+        let outputData = document.getElementById('output_window')
+        let modalBody = document.getElementsByClassName('modal-body')[0]
+        modalBody.innerHTML = outputData.innerHTML
+        // Removing plotly icons
+        let icons = modalBody.getElementsByClassName('modebar')
+        Array.prototype.slice.call(icons).forEach(
+            function(item) {
+                item.remove();
+            })
+    })
 })
-
-
-
 
 /* Reference :- codepen.io */
 $(function() {

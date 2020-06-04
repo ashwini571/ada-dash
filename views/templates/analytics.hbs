@@ -86,12 +86,13 @@
                     </div>
 
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8" id="output_window">
                     <div class="browser">
                         <div class="top-bar">
                             <div class="dot"></div>
                             <div class="dot"></div>
                             <div class="dot"></div>
+                            <input type="image" src="/public/images/expand.png" style="float: right" id="maximize" data-toggle="modal" data-target="#myModal"/>
                         </div>
 
                         <div id="window" class="table-responsive">
@@ -99,6 +100,25 @@
 
                             </div>
                             <div class="row" id="output">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- The Modal for maximizing output window -->
+                    <div class="modal fade" id="myModal">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <!-- Modal body -->
+                                <div class="modal-body" >
+                                    <!--Output will be appended here! -->
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
 
                             </div>
                         </div>

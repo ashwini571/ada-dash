@@ -33,7 +33,6 @@ function createPlot(data,x_axis,y_axis)
 function getData(reqBody,url,callback) {
     /* Loader */
     let output =  document.getElementById("output")
-    console.log(output)
     if(output !== null)
         output.innerHTML = `<div class="loader"></div>`
     let init ={
