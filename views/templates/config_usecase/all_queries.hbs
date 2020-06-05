@@ -3,85 +3,86 @@
         <link rel="stylesheet" href="/public/css/styles.css">
     {{/inline}}
     {{#*inline "body-block" }}
-        {{> sidebar }}
-        <div class="content-container">
-            <div class="container" >
-                <br><br>
-                <div class="row">
-                    <a class="btn btn-secondary" href="/config/query/add/{{usecase_id}}">Add Query</a>
-                </div>
-                <br><br>
-            </div>
-            <div class="container">
-            <div class="accordion" id="accordionExample">
-                {{#each result }}
-                    <div class="card">
-                        <div class="card-header" id="heading{{id}}">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
-                                    {{title}}
-                                </button>
-                            </h2>
-                        </div>
-
-                        <div id="collapse{{id}}" class="collapse" aria-labelledby="heading{{id}}" data-parent="#accordionExample">
-                            <div class="card-body">
-
-                                <form class="form-horizontal" id="{{id}}" usecase_id={{usecase_id}}>
-                                    <div class="form-group">
-                                        <label for="name" class="col-sm-2 control-label">Type</label>
-                                        <div class="col-sm-10">
-                                            <select class="form-control" name="" id="type{{id}}" value="{{type}}" disabled>
-                                                <option value="count" {{#ifCond type '==' "count" }}selected{{/ifCond}}>count</option>
-                                                <option value="percent" {{#ifCond type '==' "percent" }}selected{{/ifCond}}>percent</option>
-                                                <option value="filter" {{#ifCond type '===' "filter" }}selected{{/ifCond}}>filter</option>
-                                                <option value="all_data" {{#ifCond type '===' "custom" }}selected{{/ifCond}}>custom</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="title" class="col-sm-2 control-label">Title</label>
-                                        <div class="col-sm-10">
-                                            <input class="form-control" id="title{{id}}" value="{{title}}" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="Query" class="col-sm-2 control-label">Query</label>
-                                        <div class="col-sm-10">
-                                            <textarea class="form-control" id="query{{id}}" rows=5 disabled>{{query}}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description" class="col-sm-2 control-label">Description</label>
-                                        <div class="col-sm-10">
-                                            <textarea class="form-control" id="description{{id}}" rows=3 disabled>{{description}}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-offset-2 col-sm-10">
-                                            <button type="button" class="btn btn-outline-secondary" id="edit-query{{id}}" onclick="return handleEditQuery({{id}})">Edit</button>
-                                            <button type="submit" class="btn btn-outline-secondary" id="save-query{{id}}" hidden>Save</button>
-                                            <button type="button" class="btn btn-danger del-btn-query" id="delete-query{{id}}">Delete</button>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="id{{id}}" value="{{id}}">
-                                </form>
-
-                            </div>
-                        </div>
+        <div class="row" id="body-row">
+            {{> sidebar}}
+                <!-- MAIN -->
+            <div class="col p-4">
+                <div class="container" >
+                    <br><br>
+                    <div class="row">
+                        <a class="btn btn-secondary" href="/config/query/add/{{usecase_id}}">Add Query</a>
                     </div>
-                {{/each}}
-        </div>
+                    <br><br>
+                </div>
+                <div class="container">
+                    <div class="accordion" id="accordionExample">
+                        {{#each result }}
+                            <div class="card">
+                                <div class="card-header" id="heading{{id}}">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{id}}" aria-expanded="false" aria-controls="collapse{{id}}">
+                                            {{title}}
+                                        </button>
+                                    </h2>
+                                </div>
 
+                                <div id="collapse{{id}}" class="collapse" aria-labelledby="heading{{id}}" data-parent="#accordionExample">
+                                    <div class="card-body">
 
+                                        <form class="form-horizontal" id="{{id}}" usecase_id={{usecase_id}}>
+                                            <div class="form-group">
+                                                <label for="name" class="col-sm-2 control-label">Type</label>
+                                                <div class="col-sm-10">
+                                                    <select class="form-control" name="" id="type{{id}}" value="{{type}}" disabled>
+                                                        <option value="count" {{#ifCond type '==' "count" }}selected{{/ifCond}}>count</option>
+                                                        <option value="percent" {{#ifCond type '==' "percent" }}selected{{/ifCond}}>percent</option>
+                                                        <option value="filter" {{#ifCond type '===' "filter" }}selected{{/ifCond}}>filter</option>
+                                                        <option value="custom" {{#ifCond type '===' "custom" }}selected{{/ifCond}}>custom</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="title" class="col-sm-2 control-label">Title</label>
+                                                <div class="col-sm-10">
+                                                    <input class="form-control" id="title{{id}}" value="{{title}}" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Query" class="col-sm-2 control-label">Query</label>
+                                                <div class="col-sm-10">
+                                                    <textarea class="form-control" id="query{{id}}" rows=5 disabled>{{query}}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="description" class="col-sm-2 control-label">Description</label>
+                                                <div class="col-sm-10">
+                                                    <textarea class="form-control" id="description{{id}}" rows=3 disabled>{{description}}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-offset-2 col-sm-10">
+                                                    <button type="button" class="btn btn-outline-secondary" id="edit-query{{id}}" onclick="return handleEditQuery({{id}})">Edit</button>
+                                                    <button type="submit" class="btn btn-outline-secondary" id="save-query{{id}}" hidden>Save</button>
+                                                    <button type="button" class="btn btn-danger del-btn-query" id="delete-query{{id}}">Delete</button>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="id{{id}}" value="{{id}}">
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
             </div>
-
         </div>
     {{/inline}}
     {{#*inline "scripts-block" }}
         <script>
             $("#queries").addClass("active")
         </script>
+        <script src="/public/js/sidebar.js"></script>
         <script src="/public/js/utils_client.js"></script>
         <script src="/public/js/crud_query_client.js"></script>
     {{/inline}}

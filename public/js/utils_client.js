@@ -22,7 +22,7 @@ function createPlot(data,x_axis,y_axis)
     $("#output").pivotUI(modifiedData, {
         renderers: renderers,
         rendererName: "Bar Chart",
-        cols:["time"],
+        cols:["days"],
         aggregatorName :"Sum",
         vals: [y_axis+"_count"],
         rowOrder: "value_a_to_z", colOrder: "value_z_to_a",

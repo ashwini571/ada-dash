@@ -97,7 +97,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     sqliteDb.get(sql,[id],(err,row)=>{
 
         if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
-            res.send({error:"Something went wrong!"})
+            res.send({error:"Only values from 1 to 180 are allowed"})
         else if(row===undefined)
             res.send({error:"No data found"})
         else {
@@ -108,7 +108,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                 queryRedshift = userInputToQuery(queryRedshift,input)
             /* Adding user input time Period */
             queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
-            let cachedData = myCache.get(key)
+            let cachedData = undefined
 
             if(cachedData == undefined) {
 
@@ -152,7 +152,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
             let key = usecase_id+"$"+id+"$"+timePeriod
 
             queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
-            let cachedData = myCache.get(key)
+            let cachedData = undefined
 
             if(cachedData == undefined) {
 

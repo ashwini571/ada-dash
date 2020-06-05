@@ -17,7 +17,7 @@ $(document).ready(function() {
         clearCard()
         if (type === 'count') {
             let rows = JSON.parse(data.rows)
-            output.innerText = "Count:-" + rows[0].count
+            output.innerHTML= `<h2> Count:- ${rows[0].count} </h2>`
         }
         else if(type === 'plot') {
             createPlot(data,data.x_axis,data.y_axis)

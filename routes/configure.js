@@ -162,10 +162,10 @@ router.post('/plot/gen_sql', (req,res)=>{
     let sql
     console.log(req.body)
     if(req.body.date_time_format == 'epoch'){
-        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second') AS time FROM marvin.${req.body.tablename} WHERE (timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second')>getdate()-$timePeriod GROUP BY time order by time;`
+        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second') AS days FROM marvin.${req.body.tablename} WHERE days>=current_date-$timePeriod AND days<current_date GROUP BY days order by days;`
     }
     else{
-        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',cast(${req.body.x_axis} AS timestamp)) AS time FROM marvin.${req.body.tablename} WHERE ${req.body.x_axis}>getdate()-$timePeriod GROUP BY time order by time;`
+        sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',cast(${req.body.x_axis} AS timestamp)) AS days FROM marvin.${req.body.tablename} WHERE days>=current_date-$timePeriod AND days<current_date GROUP BY days order by days;`
     }
     res.send({sql:sql})
 })
