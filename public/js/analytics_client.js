@@ -5,16 +5,26 @@ $(document).ready(function() {
     let output = document.getElementById('output')
     let title = document.getElementById('heading')
     let timePeriod = document.getElementById('period')
-
+    let helpBox = document.getElementById('helpbox')
+    let reqBodyCopy
     /* Used to clear the output area */
     function clearCard() {
         /* Emptying field */
         output.innerHTML = ""
+        helpBox.style.display = "none"
     }
 
     /* Adds the recieved data to output */
     function parseDataToDom(data, type) {
         clearCard()
+        //Last-fetched time update
+        if(type !== 'filter'){
+            helpBox.style.display = ""
+            let lastFetchedTimeElement =document.getElementById('time_last_fetched')
+            lastFetchedTimeElement.innerText = data.last_fetched
+            lastFetchedTimeElement.innerText += "[UTC]"
+        }
+        // Data
         if (type === 'count') {
             let rows = JSON.parse(data.rows)
             output.innerHTML= `<h2> Count:- ${rows[0].count} </h2>`
@@ -23,14 +33,14 @@ $(document).ready(function() {
             createPlot(data,data.x_axis,data.y_axis)
         }
         else {
-            console.log(data)
             createPivottable(data)
         }
     }
-
+    /* In case of error or empty fields */
     function noDataToDom(data) {
         clearCard()
-        output.innerText = data
+        output.innerHTML= `<h2> Error! </h2>`
+        output.innerHTML += JSON.stringify(data)
     }
 
     function getAndShowData(reqBody,url) {
@@ -49,7 +59,6 @@ $(document).ready(function() {
     }
 
     let queryElements = document.getElementsByClassName('query-list')
-
     /* Event-listeners on query-options */
     Array.from(queryElements).forEach((element) => {
         element.addEventListener('click', (event) => {
@@ -74,25 +83,35 @@ $(document).ready(function() {
                         let valueOfInput = inputTags[idx].value
                         input.push({nameOfInput,valueOfInput})
                     }
-                    console.log(input)
-
+                    let time
+                    if(element.getAttribute('time_dependent') == 0)
+                        time = 0
+                    else
+                        time = (timePeriod === null || timePeriod===undefined)?0:timePeriod.value
                     let reqBody = {
                         id:element.id,
                         usecase_id:element.getAttribute('usecase_id'),
                         input:input,
-                        timePeriod:timePeriod.value
+                        type:queryType,
+                        timePeriod:time
                     }
+                    reqBodyCopy = reqBody
                     getAndShowData(reqBody,"/analytics/getData")
                  })
             }
             else /* Else we send the reqBody */{
-
+                let time
+                if(element.getAttribute('time_dependent') == 0)
+                    time = 0
+                else
+                    time = (timePeriod === null || timePeriod===undefined)?0:timePeriod.value
                 let reqBody ={
                     id:element.id,
                     usecase_id:element.getAttribute('usecase_id'),
                     type:queryType,
-                    timePeriod:(timePeriod === null || timePeriod===undefined)?0:timePeriod.value
+                    timePeriod: time
                 }
+                reqBodyCopy = reqBody
                 getAndShowData(reqBody,"/analytics/getData")
             }
         })
@@ -102,17 +121,35 @@ $(document).ready(function() {
     /* Event-listeners on plot-options */
     Array.from(plotElements).forEach((element) => {
         element.addEventListener('click', (event) => {
-
+            let time
+            if(element.getAttribute('time_dependent') == 0)
+                time = 0
+            else
+                time = (timePeriod === null || timePeriod===undefined)?0:timePeriod.value
             let reqBody ={
                 id:element.id,
                 usecase_id:element.getAttribute('usecase_id'),
                 type:'plot',
-                timePeriod:timePeriod.value
+                timePeriod:time
             }
+            reqBodyCopy = reqBody
             getAndShowData(reqBody,"/analytics/getPlotdata")
         })
     })
+    let refreshBtn = document.getElementById('refresh-btn')
+    refreshBtn.addEventListener('click',(event)=>{
+        event.preventDefault()
+        reqBodyCopy.cacheReset = 1
+        if(reqBodyCopy.type == 'plot')
+            getAndShowData(reqBodyCopy,"/analytics/getPlotdata")
+        else
+            getAndShowData(reqBodyCopy,"/analytics/getData")
+    })
     // Auto Selecting first query of count type
     document.querySelectorAll("a[query_type='count']")[0].click()
+
+
+
+
 
 })

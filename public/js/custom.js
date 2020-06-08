@@ -22,7 +22,7 @@ $(document).ready(function(){
     Array.from(optionsList).forEach((element)=>{
        if(element.getAttribute('time_dependent') === '1') {
            setAttributes(element.getElementsByClassName('circle')[0],{"style":"background-color:yellow"})
-           setAttributes(element.getElementsByClassName('icon')[0],{"data-toggle":"tooltip", "data-placement":"right", "title":"Results are time-dependent"})
+           setAttributes(element,{"data-toggle":"tooltip", "data-placement":"right", "title":"Results are time-dependent"})
        }
     })
     /* Flash icons on input change */
@@ -31,7 +31,6 @@ $(document).ready(function(){
             if(element.getAttribute('time_dependent') === '1') {
                 element.getElementsByClassName('block')[0].classList.add("flash")
                 setTimeout(function () {
-                    console.log(1)
                     element.getElementsByClassName('block')[0].classList.remove("flash")
                 },1500)
             }

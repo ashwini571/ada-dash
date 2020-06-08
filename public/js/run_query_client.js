@@ -17,7 +17,8 @@ $(document).ready(function(){
                 if(data.error) {
                     output.innerHTML = ""
                     info.innerHTML = ""
-                    output.innerText = data.error
+                    output.innerHTML= `<h2> Error! </h2>`
+                    output.innerHTML += JSON.stringify(data.error)
                 }
                 else{
                     output.innerHTML = ""

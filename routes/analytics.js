@@ -91,7 +91,8 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     let usecase_id = req.body.usecase_id
     let input = req.body.input
     let timePeriod = Number(req.body.timePeriod)
-
+    let queryType = req.body.type
+    let cacheReset = req.body.cacheReset
     /* brings redshift query from sqlite */
     let sql = `SELECT * FROM all_queries WHERE id=?`
     sqliteDb.get(sql,[id],(err,row)=>{
@@ -103,27 +104,37 @@ router.post('/getData', urlencodedParser, (req,res)=>{
         else {
             let queryRedshift = row.query
             let key = usecase_id+"_"+id+"_"+timePeriod
+            console.log("key:"+key)
             /* Adding User input to the query */
             if(row.type === 'filter')
                 queryRedshift = userInputToQuery(queryRedshift,input)
             /* Adding user input time Period */
-            queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
-            let cachedData = undefined
-
-            if(cachedData == undefined) {
+            queryRedshift = queryRedshift.replace(/\$timePeriod/g,timePeriod)
+            console.log("query:"+ queryRedshift)
+            let cachedData =  queryType!=='filter'?myCache.get(key):undefined
+            if(cachedData === undefined || cacheReset === 1) {
 
                 redshiftClient.query(queryRedshift, (error,result)=>{
+                    console.log(error)
                     if(error)
-                        res.send({error:"Something went wrong"})
+                        res.send({error:error})
                     else if(result.rows.length===0)
                         res.send({error:"No data found"})
                     else {
-                        console.log("from_redshift")
-                        myCache.set(key,result.rows,86400)
-                        res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched})
+                       let currTime = new Date().toISOString().split('.')[0]
+                        console.log(currTime)
+                        /* Updating last-fetched timing */
+                       sqliteDb.run(`UPDATE all_queries SET last_fetched = '${currTime}' WHERE id = ${id}`,(err)=>{
+                           if(err)
+                               res.send({error:"Something went wrong"})
+                           else{
+                               console.log("from_redshift")
+                               myCache.set(key,result.rows,86400)
+                               res.send({rows: JSON.stringify(result.rows),last_fetched:currTime})
+                           }
+                       })
                     }
                 })
-
             }
             else{
                 console.log("from_cache")
@@ -138,7 +149,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
     let id = req.body.id
     let usecase_id = req.body.usecase_id
     let timePeriod = Number(req.body.timePeriod)
-
+    let cacheReset = req.body.cacheReset
     /* brings redshift query from sqlite */
     let sql = `SELECT * FROM all_plots WHERE id=?`
     sqliteDb.get(sql,[id],(err,row)=>{
@@ -150,26 +161,29 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
         else {
             let queryRedshift = row.query
             let key = usecase_id+"$"+id+"$"+timePeriod
-
-            queryRedshift = queryRedshift.replace("$timePeriod",timePeriod)
-            let cachedData = undefined
-
-            if(cachedData == undefined) {
+            queryRedshift = queryRedshift.replace(/\$timePeriod/g,timePeriod)
+            let cachedData =  myCache.get(key)
+            if(cachedData === undefined || cacheReset === 1) {
 
                 redshiftClient.query(queryRedshift, (error,result)=>{
-                    console.log(error)
-                    console.log(result)
                     if(error)
-                        res.send({error:"Something went wrong"})
+                        res.send({error:error})
                     else if(result.rows.length===0)
                         res.send({error:"No data found"})
                     else {
-                        console.log("from_redshift")
-                        myCache.set(key,result.rows,86400)
-                        res.send({rows: JSON.stringify(result.rows),last_fetched:row.last_fetched,x_axis:row.x_axis,y_axis:row.y_axis})
+                        let currTime = new Date().toISOString().split('.')[0]
+                        /* Updating last-fetched timing */
+                        sqliteDb.run(`UPDATE all_plots SET last_fetched = '${currTime}' WHERE id = ${id}`,(err)=>{
+                            if(err)
+                                res.send({error:"Something went wrong"})
+                            else{
+                                console.log("from_redshift")
+                                myCache.set(key,result.rows,86400)
+                                res.send({rows: JSON.stringify(result.rows),last_fetched:currTime,x_axis:row.x_axis,y_axis:row.y_axis})
+                            }
+                        })
                     }
                 })
-
             }
             else{
                 console.log("from_cache")

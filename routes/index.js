@@ -37,9 +37,15 @@ router.post('/add',urlencodedParser,(req,res)=>{
           let sql = `INSERT INTO analytics_cases(id,title,tablename,table_columns) VALUES(?,?,?,?)`
           sqliteDb.run(sql,[req.body.id, req.body.title, req.body.tablename, columnNames],(err)=>{
               console.log(err)
-              if(err)
-                res.render('templates/add_usecase',{title:'Add Usecase', error:[err]})
-              else {
+              if(err){
+                  let error
+                  if(err.errno === 19)
+                      error = ["Id is already taken!"]
+                  else
+                      error = [err]
+                  res.render('templates/add_usecase',{title:'Add Usecase', error:error})
+              }
+              else{
                   /* Calling the Add_query function */
                   req.params.id = req.body.id
                   res.render('templates/config_usecase/add_query', {title: 'Add Query', message:["Created Successfully"], usecase_id: req.body.id})
@@ -73,7 +79,7 @@ router.post('/run_query', urlencodedParser, (req,res)=>{
   redshiftClient.query(query, (error,result)=>{
     console.log(result)
     if(error)
-      res.send({error:"Something went wrong"})
+      res.send({error:error})
     else if(result.rows.length==0)
       res.send({error:"No data found"})
     else
