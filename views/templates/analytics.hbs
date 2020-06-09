@@ -14,7 +14,7 @@
 
                         <h3 style="color: #3b3b3b;font-family: 'Hammersmith One', sans-serif;font-weight: bold;border-left:5px solid #000000;padding-left: 10px" id="heading">
                             {{title}}
-
+                            <!--Checking if there's a time-dependent subusecases -->
                             {{#if countTimeDependency}}
                             in last
                             <input  style="width: 85px" list="periods" name="period" id="period" value="7">
@@ -92,8 +92,13 @@
                         </div>
 
                         <div id="window" class="table-responsive">
-                            <div class="row" id="helpbox" style="margin-bottom: 6px;display: none">
-                               <span class="tags" id="last_fetched">Last-fetched: <span id="time_last_fetched"></span><a href="#" id="refresh-btn">(Refresh)</a></span>
+                            <div class="row" id="infobox" style="margin-bottom: 6px;">
+                                <div class="col" id="last_fetched_div" style="display:none;">
+                                    <span class="tags" >Last-fetched: <span id="time_last_fetched"></span><a href="#" id="refresh-btn">(Refresh)</a></span>
+                                </div>
+                                <div class="col" id="export_btn_div" style="display:none;">
+                                    <button type="button" id="export_btn" style="float: right" class="btn btn-sm btn-secondary">Export CSV </button>
+                                </div>
                             </div>
                             <div class="row" id="output">
 

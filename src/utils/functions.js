@@ -4,7 +4,7 @@ const validateSql = (sql)=>{
     if(sql===undefined || sql===null)
         return 0
    for(let idx=0;idx<blockedWordsList.length;idx++){
-       if(sql.toLowerCase().indexOf(blockedWordsList[idx].toLowerCase())!==-1)
+       if(sql.toLowerCase().match(`\\b${blockedWordsList[idx].toLowerCase()}\\b`)!=null)
            return 0
     }
    return 1

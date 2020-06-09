@@ -5,13 +5,15 @@ $(document).ready(function() {
     let output = document.getElementById('output')
     let title = document.getElementById('heading')
     let timePeriod = document.getElementById('period')
-    let helpBox = document.getElementById('helpbox')
+    let lastFetchedDiv = document.getElementById('last_fetched_div')
+    let exportBtnDiv = document.getElementById('export_btn_div')
     let reqBodyCopy
     /* Used to clear the output area */
     function clearCard() {
         /* Emptying field */
         output.innerHTML = ""
-        helpBox.style.display = "none"
+        lastFetchedDiv.style.display = "none"
+        exportBtnDiv.style.display = "none"
     }
 
     /* Adds the recieved data to output */
@@ -19,11 +21,16 @@ $(document).ready(function() {
         clearCard()
         //Last-fetched time update
         if(type !== 'filter'){
-            helpBox.style.display = ""
+            lastFetchedDiv.style.display = ""
             let lastFetchedTimeElement =document.getElementById('time_last_fetched')
             lastFetchedTimeElement.innerText = data.last_fetched
             lastFetchedTimeElement.innerText += "[UTC]"
         }
+        // for export-csv button
+        if(type === 'filter' || type === 'custom'){
+            exportBtnDiv.style.display = ""
+        }
+
         // Data
         if (type === 'count') {
             let rows = JSON.parse(data.rows)
@@ -150,7 +157,11 @@ $(document).ready(function() {
     document.querySelectorAll("a[query_type='count']")[0].click()
 
 
-
+    document.getElementById("export_btn").addEventListener("click", function () {
+        let tableHtml = document.querySelector("table").outerHTML
+        console.log(tableHtml)
+        exportTableToCsv(tableHtml, "output.csv")
+    })
 
 
 })
