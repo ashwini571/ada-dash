@@ -7,7 +7,7 @@ const clusterName = redshift.clusterName
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
-
+const validateSql = require('../src/utils/functions').validateSql
 
 /* GET, home page. */
 router.get('/', (req, res, next)=>{
@@ -75,7 +75,8 @@ router.get('/run_query', (req,res)=>{
 router.post('/run_query', urlencodedParser, (req,res)=>{
 
   let query = req.body.query
-  console.log(query)
+  if(!validateSql(query))
+     return res.send({error:"This sql is not permitted!"})
   redshiftClient.query(query, (error,result)=>{
     console.log(result)
     if(error)

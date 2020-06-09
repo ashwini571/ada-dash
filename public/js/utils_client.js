@@ -13,8 +13,7 @@ function createPivottable(data) {
     },true)
 }
 // Pivottable with Line chart as default
-function createPlot(data,x_axis,y_axis)
-{
+function createPlot(data,x_axis,y_axis) {
     let modifiedData = JSON.parse(data.rows)
     let derivers = $.pivotUtilities.derivers
     let renderers = $.extend($.pivotUtilities.renderers,

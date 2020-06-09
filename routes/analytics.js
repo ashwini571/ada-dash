@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const redshift = require('../src/utils/redshift_connect')
+const functions = require('../src/utils/functions')
 const sqliteDb = require('../src/utils/sqlite_connect')
 /* Data-Caching */
 const nodeCache = require('node-cache')
@@ -13,42 +14,11 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
 
-/* Utility function for extracting words enclosed under {} */
-const extractVar = (row)=>{
-    row.forEach((element)=>{
-        let inputVar = element.query.match(/{[\w]+}/g)
-        if(inputVar != null) {
-            /* Removing { and } from the string */
-            for(let e in inputVar)
-                inputVar[e] = inputVar[e].slice(1,-1)
-            element.inputVar = inputVar
-        }
-        else
-            element.inputVar = []
-    })
-}
-
-/*Inserting user input values to SQL query for filtering */
-const userInputToQuery = (query,input)=>{
-
-    for(let obj in input) {
-       query = query.replace("{"+input[obj].nameOfInput+"}",input[obj].valueOfInput)
-    }
-    return query
-}
-
-const decideTimeDependency = (row)=>{
-   let countOfTimeDependency = 0
-   row.forEach((element)=>{
-       if(element.query.search("\\$timePeriod")!==-1){
-           element.time_dependent = 1
-            countOfTimeDependency += 1
-       }
-       else
-           element.time_dependent = 0
-   })
-    return countOfTimeDependency
-}
+/* from functions.js */
+const userInputToQuery = functions.userInputToQuery
+const extractVar = functions.extractVar
+const decideTimeDependency = functions.decideTimeDependency
+const validateSql = functions.validateSql
 
 /* GET,  Shows Options For Different Types of Query and plots at Analytics Page */
 router.get('/:usecase_id', (req, res )=> {
@@ -103,6 +73,8 @@ router.post('/getData', urlencodedParser, (req,res)=>{
             res.send({error:"No data found"})
         else {
             let queryRedshift = row.query
+            if(!validateSql(queryRedshift))
+                return res.send({error:"This sql is not permitted!"})
             let key = usecase_id+"_"+id+"_"+timePeriod
             console.log("key:"+key)
             /* Adding User input to the query */
@@ -160,6 +132,8 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
             res.send({error:"No data found"})
         else {
             let queryRedshift = row.query
+            if(!validateSql(queryRedshift))
+                return res.send({error:"This sql is not permitted!"})
             let key = usecase_id+"$"+id+"$"+timePeriod
             queryRedshift = queryRedshift.replace(/\$timePeriod/g,timePeriod)
             let cachedData =  myCache.get(key)

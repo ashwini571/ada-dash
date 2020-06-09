@@ -39,7 +39,8 @@ $(document).ready(function() {
     /* In case of error or empty fields */
     function noDataToDom(data) {
         clearCard()
-        output.innerHTML= `<h2> Error! </h2>`
+        if(data.error)
+            output.innerHTML= `<h2> Error! </h2>`
         output.innerHTML += JSON.stringify(data)
     }
 
