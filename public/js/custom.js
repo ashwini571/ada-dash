@@ -37,18 +37,18 @@ $(document).ready(function(){
         })
     })
 
-    /* Listeners for Maximize button */
-    let maximizeBtn = document.getElementById('maximize')
-    maximizeBtn.addEventListener('click',(event)=>{
-        let outputData = document.getElementById('output_window')
-        let modalBody = document.getElementsByClassName('modal-body')[0]
-        modalBody.innerHTML = outputData.innerHTML
-        // Removing plotly icons
-        let icons = modalBody.getElementsByClassName('modebar')
-        Array.prototype.slice.call(icons).forEach(
-            function(item) {
-                item.remove();
-            })
+    /* Listener for Maximize btn */
+    $("#maximize").click(()=>{
+        $("#window").appendTo("#modal_output")
+    })
+    /* Listeners for Minimize btn */
+    $('#minimize').click(()=>{
+        $("#window").appendTo("#browser_output")
+        $('#myModal').modal('hide')
+    })
+    /* Appending data back to original place, on modal hidden otherwise(random click on DOM) */
+    $('#myModal').on('hide.bs.modal', ()=>{
+        $("#window").appendTo("#browser_output")
     })
 })
 

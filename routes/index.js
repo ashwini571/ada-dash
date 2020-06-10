@@ -7,14 +7,24 @@ const clusterName = redshift.clusterName
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
+
 const validateSql = require('../src/utils/functions').validateSql
+const paginate = require('express-paginate')
+const app = express()
+
+
 
 /* GET, home page. */
-router.get('/', (req, res, next)=>{
+router.get('/',paginate.middleware(15,50),(req, res, next)=>{
+  sqliteDb.get(`SELECT COUNT(*) as total_count FROM analytics_cases`, (err,row)=>{
+      const totalCount = row.total_count
+      const pageCount = Math.ceil(totalCount / req.query.limit)
 
-  let sql = `SELECT id,title FROM analytics_cases`;
-  sqliteDb.all(sql,(err,rows)=>{
-    res.render('templates/index',{error:err, result:rows, title:'Home',clusterName:clusterName})
+      let sql = `SELECT id,title FROM analytics_cases LIMIT ? OFFSET ?`
+      sqliteDb.all(sql, [req.query.limit, req.skip], (err,rows)=>{
+          res.render('templates/index',{error:"Something went wrong!", result:rows, title:'Home',clusterName:clusterName,pages: paginate.getArrayPages(req)( 4,pageCount, req.query.page)
+          ,next_pages: paginate.hasNextPages(req)(pageCount)})
+      })
   })
 })
 

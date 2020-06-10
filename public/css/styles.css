@@ -119,7 +119,7 @@ a:active {
     width: 100%;
 }
 
-ul li a {
+.custom-a {
     position: relative;
     display: block;
     width: 100%;
@@ -139,9 +139,6 @@ ul li:focus, a:focus {
     outline: none;
 }
 
-ul li:nth-child(1) a {
-    border-top: none;
-}
 
 ul li a.active {
     opacity: 1;

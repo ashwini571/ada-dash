@@ -10,7 +10,7 @@ AWS.config.region = process.env.REGION
 
 let app = express()
 //template engine
-let hbs = require('hbs');
+let hbs = require('hbs')
 hbs.registerPartials(__dirname + '/views/partials')
 hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
   switch (operator) {
@@ -56,19 +56,10 @@ app.use('/analytics', analyticsRouter)
 app.use('/config', configRouter)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404))
+app.use(function(req, res) {
+  res.render('templates/error')
 })
 
-// error handler
-app.use(function(err, req, res, next) {
-
-  let error={
-    msg:err.message,
-    status:(err.status || 500)
-  }
-  res.render('templates/error',error)
-})
 
 let port = process.env.PORT || 8000
 

@@ -42,7 +42,7 @@
                     <ul id="accordion" class="custom-ul" style="background: lightgrey;border-radius: 10px 10px 10px 10px;">
                         {{#each resQuery}}
                         <li>
-                            <a class="query-list active" href="#" query_type="{{type}}" usecase_id="{{usecase_id}}" id="{{id}}" inputVar="{{inputVar}}" time_dependent="{{time_dependent}}">
+                            <a  class="query-list custom-a active" href="#" query_type="{{type}}" usecase_id="{{usecase_id}}" id="{{id}}" inputVar="{{inputVar}}" time_dependent="{{time_dependent}}">
                                 <div class="row">
                                     <div class="col-2">
                                         <div class="icon">
@@ -61,7 +61,7 @@
                         {{/each}}
                         {{#each resPlot}}
                             <li>
-                                <a class="plot-list active" href="#"   usecase_id="{{usecase_id}}" id="{{id}}" time_dependent="{{time_dependent}}">
+                                <a class="plot-list custom-a active" href="#"   usecase_id="{{usecase_id}}" id="{{id}}" time_dependent="{{time_dependent}}">
                                     <div class="row">
                                         <div class="col-2" >
                                             <div class="icon" style="overflow: auto">
@@ -83,12 +83,12 @@
                     </div>
                 </div>
                 <div class="col-md-8" id="output_window">
-                    <div class="browser">
+                    <div class="browser" id="browser_output">
                         <div class="top-bar">
                             <div class="dot"></div>
                             <div class="dot"></div>
                             <div class="dot"></div>
-                            <input type="image" src="/public/images/expand.png" style="float: right" id="maximize" data-toggle="modal" data-target="#myModal"/>
+                            <i type="button" class="fa fa-window-maximize" style="float: right" id="maximize" data-toggle="modal" data-target="#myModal"></i>
                         </div>
 
                         <div id="window" class="table-responsive">
@@ -113,13 +113,19 @@
                             <div class="modal-content">
                                 <!-- Modal body -->
                                 <div class="modal-body" >
-                                    <!--Output will be appended here! -->
+                                    <div class="browser" id="modal_output">
+                                        <div class="top-bar">
+                                            <div class="dot"></div>
+                                            <div class="dot"></div>
+                                            <div class="dot"></div>
+                                            <i type="button" class="fa fa-window-minimize" style="float: right" id="minimize" ></i>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <!-- Modal footer -->
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                </div>
+<!--                                &lt;!&ndash; Modal footer &ndash;&gt;-->
+<!--                                <div class="modal-footer">-->
+<!--                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--                                </div>-->
 
                             </div>
                         </div>
