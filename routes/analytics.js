@@ -104,7 +104,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                         res.send({error:"No data found"})
                     else {
                        let currTime = new Date().toISOString().split('.')[0]
-                        console.log(currTime)
+                        console.log(chalk.green("Current_time: "+currTime))
                         /* Updating last-fetched timing */
                        sqliteDb.run(`UPDATE all_queries SET last_fetched = '${currTime}' WHERE id = ${id}`,(errUpdate)=>{
                            if(errUpdate) {
@@ -166,6 +166,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
                         res.send({error:"No data found"})
                     else {
                         let currTime = new Date().toISOString().split('.')[0]
+                        console.log(chalk.green("Current_time: "+currTime))
                         /* Updating last-fetched timing */
                         sqliteDb.run(`UPDATE all_plots SET last_fetched = '${currTime}' WHERE id = ${id}`,(errUpdate)=>{
                             if(errUpdate) {
