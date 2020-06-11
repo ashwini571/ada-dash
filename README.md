@@ -27,16 +27,17 @@ clusters at the backend and automates the process of running queries on redshift
 **analytics_cases**
 
 id  | title | tablename | table_columns
------ | -------- | ----- | ---|
+--- | ----- | --------- | -------------|
 
- **all_queries**  
+**all_queries**  
  
-  id |usecase_id  | type | title | query | last_fetched|
-  ---| ----- | -------- | -------- | ----| ------------|
-   **all_plots**  
+  id | usecase_id  | type | title | query | last_fetched |
+  ---| ----------- | ---- | ----- | ----- | ------------ |
+  
+**all_plots**  
      
    id | usecase_id  | x-axis | y-axis | date_time_format | title| query | last_fetched |
-    ---- |  ----- | -------- | -------- | ----| ------------| ---- | -------|
+   -- |  -------- | ------ | ------ | -----------------| -----| ----- | -------------|
 
 
 
