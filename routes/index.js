@@ -4,6 +4,7 @@ const sqliteDb = require('../src/utils/sqlite_connect')
 const redshift = require('../src/utils/redshift_connect')
 const redshiftClient = redshift.redshiftClient
 const clusterName = redshift.clusterName
+const chalk = require('chalk')
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -15,13 +16,17 @@ const app = express()
 
 
 /* GET, home page. */
-router.get('/',paginate.middleware(15,50),(req, res, next)=>{
+router.get('/',paginate.middleware(9,50),(req, res, next)=>{
   sqliteDb.get(`SELECT COUNT(*) as total_count FROM analytics_cases`, (err,row)=>{
+      if(err)
+          console.log(chalk.yellow("Error-Sqlite:"+err))
       const totalCount = row.total_count
       const pageCount = Math.ceil(totalCount / req.query.limit)
 
       let sql = `SELECT id,title FROM analytics_cases LIMIT ? OFFSET ?`
-      sqliteDb.all(sql, [req.query.limit, req.skip], (err,rows)=>{
+      sqliteDb.all(sql, [req.query.limit, req.skip], (error,rows)=>{
+          if(error)
+            console.log(chalk.yellow("Error-Sqlite:"+error))
           res.render('templates/index',{error:"Something went wrong!", result:rows, title:'Home',clusterName:clusterName,pages: paginate.getArrayPages(req)( 4,pageCount, req.query.page)
           ,next_pages: paginate.hasNextPages(req)(pageCount)})
       })
@@ -39,15 +44,18 @@ router.post('/add',urlencodedParser,(req,res)=>{
 
   redshiftClient.parameterizedQuery(query, [req.body.tablename],(error,result)=> {
       /* Checks for error and empty rows */
-      if(error  || (result.rows!==undefined && result.rows.length===0))
-        res.render('templates/add_usecase', {title: 'Add Usecase', error:["Table does not exist!"]})
+      if(error  || (result.rows!==undefined && result.rows.length===0)) {
+          console.log(chalk.red("Error-redshift:"+error))
+          res.render('templates/add_usecase', {title: 'Add Usecase', error: ["Table does not exist!"]})
+      }
       else{
         /* Saving column_names in sqlite table */
           let columnNames = Array.prototype.map.call(result.rows, function(item) { return item.column_name; }).join(",")
           let sql = `INSERT INTO analytics_cases(id,title,tablename,table_columns) VALUES(?,?,?,?)`
           sqliteDb.run(sql,[req.body.id, req.body.title, req.body.tablename, columnNames],(err)=>{
-              console.log(err)
+
               if(err){
+                  console.log(chalk.yellow("Error-sqlite:"+err))
                   let error
                   if(err.errno === 19)
                       error = ["Id is already taken!"]
@@ -73,7 +81,8 @@ router.get('/redshift_config', (req,res)=>{
 router.get('/search', (req,res)=>{
   let sql = `SELECT * FROM analytics_cases WHERE title LIKE '%${req.query.key}%' OR id =?`
   sqliteDb.all(sql,[req.query.key],(err,rows)=>{
-      console.log(err)
+    if(err)
+      console.log(chalk.yellow("Error-sqlite:"+err))
     res.render('templates/index',{error:err, result:rows, title:'Search Results',clusterName:clusterName})
   })
 })
@@ -88,7 +97,6 @@ router.post('/run_query', urlencodedParser, (req,res)=>{
   if(!validateSql(query))
      return res.send({error:"Only select statements are allowed!"})
   redshiftClient.query(query, (error,result)=>{
-    console.log(result)
     if(error)
       res.send({error:error})
     else if(result.rows.length==0)

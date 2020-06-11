@@ -1,12 +1,7 @@
-let logger = require('morgan')
 let indexRouter = require('./routes/index')
 let analyticsRouter = require('./routes/analytics')
 let configRouter = require('./routes/configure')
-let AWS = require('aws-sdk')
 let express = require('express')
-let createError = require('http-errors')
-
-AWS.config.region = process.env.REGION
 
 let app = express()
 //template engine
@@ -41,10 +36,7 @@ hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
 app.set('view engine', 'hbs')
 app.set('views',__dirname + '/views')
 
-app.use(logger('dev'))
 app.use(express.json())
-
-
 
 
 app.use('/static', express.static(__dirname + '/node_modules/'));

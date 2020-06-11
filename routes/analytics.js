@@ -3,6 +3,7 @@ const router = express.Router()
 const redshift = require('../src/utils/redshift_connect')
 const functions = require('../src/utils/functions')
 const sqliteDb = require('../src/utils/sqlite_connect')
+const chalk = require('chalk')
 /* Data-Caching */
 const nodeCache = require('node-cache')
 const myCache = new nodeCache()
@@ -25,8 +26,10 @@ router.get('/:usecase_id', (req, res )=> {
     let error = [],title,countTimeDependency = 0
     /*Verifiying usecase id */
     sqliteDb.get(`SELECT * FROM analytics_cases WHERE id=?`, [req.params.usecase_id], (err,row)=>{
-        if(err || (row===undefined))
+        if(err || (row===undefined)) {
+            console.log(chalk.yellow("Error-sqlite: "+err))
             return res.render('templates/error')
+        }
         else{
             title = row.title
             /* fetching all queries from sqlite */
@@ -35,16 +38,20 @@ router.get('/:usecase_id', (req, res )=> {
             let sqlForPlots = `SELECT ap.id,ap.usecase_id,ap.query,ap.title,ap.x_axis,ap.y_axis FROM analytics_cases as ac INNER JOIN all_plots as ap ON ac.id=? AND ap.usecase_id=? `
 
             sqliteDb.all(sqlForQueries,[req.params.usecase_id, req.params.usecase_id],(errQuery,resQuery)=>{
-                if (errQuery)
+                if (errQuery) {
+                    console.log(chalk.yellow("Error-sqlite: "+errQuery))
                     error.push("Error rendering queries")
+                }
                 else {
                     /*Extracting variables from query enclosed under "{ }" */
                     extractVar(resQuery)
                     countTimeDependency += decideTimeDependency(resQuery)
                 }
                 sqliteDb.all(sqlForPlots,[req.params.usecase_id, req.params.usecase_id],(errPlot,resPlot)=>{
-                    if(errPlot)
+                    if(errPlot) {
+                        console.log(chalk.yellow("Error-sqlite: "+errPlot))
                         error.push("Error rendering plots")
+                    }
                     else
                         countTimeDependency += decideTimeDependency(resPlot)
                     res.render('templates/analytics', {clusterName: clusterName,title:title,error:error,countTimeDependency:countTimeDependency, resQuery:resQuery,resPlot:resPlot, usecase_id:req.params.usecase_id})
@@ -66,8 +73,11 @@ router.post('/getData', urlencodedParser, (req,res)=>{
     /* brings redshift query from sqlite */
     let sql = `SELECT * FROM all_queries WHERE id=?`
     sqliteDb.get(sql,[id],(err,row)=>{
-
-        if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
+        else if(isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
             res.send({error:"Only values from 1 to 180 are allowed"})
         else if(row===undefined)
             res.send({error:"No data found"})
@@ -76,31 +86,33 @@ router.post('/getData', urlencodedParser, (req,res)=>{
             if(!validateSql(queryRedshift))
                 return res.send({error:"Only select statements are allowed!"})
             let key = usecase_id+"_"+id+"_"+timePeriod
-            console.log("key:"+key)
+            console.log(chalk.magenta("Cache-Key: "+key))
             /* Adding User input to the query */
             if(row.type === 'filter')
                 queryRedshift = userInputToQuery(queryRedshift,input)
             /* Adding user input time Period */
             queryRedshift = queryRedshift.replace(/\$timePeriod/g,timePeriod)
-            console.log("query:"+ queryRedshift)
             let cachedData =  queryType!=='filter'?myCache.get(key):undefined
             if(cachedData === undefined || cacheReset === 1) {
 
                 redshiftClient.query(queryRedshift, (error,result)=>{
-                    console.log(error)
-                    if(error)
-                        res.send({error:error})
+                    if(error) {
+                        console.log(chalk.red("Error-redshift: "+ error))
+                        res.send({error: error})
+                    }
                     else if(result.rows.length===0)
                         res.send({error:"No data found"})
                     else {
                        let currTime = new Date().toISOString().split('.')[0]
                         console.log(currTime)
                         /* Updating last-fetched timing */
-                       sqliteDb.run(`UPDATE all_queries SET last_fetched = '${currTime}' WHERE id = ${id}`,(err)=>{
-                           if(err)
-                               res.send({error:"Something went wrong"})
+                       sqliteDb.run(`UPDATE all_queries SET last_fetched = '${currTime}' WHERE id = ${id}`,(errUpdate)=>{
+                           if(errUpdate) {
+                               console.log(chalk.yellow("Error-sqlite: "+errUpdate))
+                               res.send({error: "Something went wrong"})
+                           }
                            else{
-                               console.log("from_redshift")
+                               console.log(chalk.magenta("Data: "+"From Redshift"))
                                myCache.set(key,result.rows,86400)
                                res.send({rows: JSON.stringify(result.rows),last_fetched:currTime})
                            }
@@ -109,7 +121,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
                 })
             }
             else{
-                console.log("from_cache")
+                console.log(chalk.magenta("Data: "+"From Cache"))
                 res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched})
             }
         }
@@ -125,9 +137,14 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
     /* brings redshift query from sqlite */
     let sql = `SELECT * FROM all_plots WHERE id=?`
     sqliteDb.get(sql,[id],(err,row)=>{
-
-        if(err || isNaN(timePeriod) || timePeriod<0 || timePeriod>180)
-            res.send({error:"Something went wrong!"})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
+        else if(isNaN(timePeriod) || timePeriod<0 || timePeriod>180) {
+            console.log(chalk.yellow("Error-sqlite: "+err))
+            res.send({error: "Something went wrong!"})
+        }
         else if(row===undefined)
             res.send({error:"No data found"})
         else {
@@ -135,23 +152,28 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
             if(!validateSql(queryRedshift))
                 return res.send({error:"Only select statements are allowed!"})
             let key = usecase_id+"$"+id+"$"+timePeriod
+            console.log(chalk.magenta("Cache-Key: "+key))
             queryRedshift = queryRedshift.replace(/\$timePeriod/g,timePeriod)
             let cachedData =  myCache.get(key)
             if(cachedData === undefined || cacheReset === 1) {
 
                 redshiftClient.query(queryRedshift, (error,result)=>{
-                    if(error)
-                        res.send({error:error})
+                    if(error) {
+                        console.log(chalk.red("Error-redshift: "+ error))
+                        res.send({error: error})
+                    }
                     else if(result.rows.length===0)
                         res.send({error:"No data found"})
                     else {
                         let currTime = new Date().toISOString().split('.')[0]
                         /* Updating last-fetched timing */
-                        sqliteDb.run(`UPDATE all_plots SET last_fetched = '${currTime}' WHERE id = ${id}`,(err)=>{
-                            if(err)
-                                res.send({error:"Something went wrong"})
+                        sqliteDb.run(`UPDATE all_plots SET last_fetched = '${currTime}' WHERE id = ${id}`,(errUpdate)=>{
+                            if(errUpdate) {
+                                console.log(chalk.yellow("Error-sqlite: "+errUpdate))
+                                res.send({error: "Something went wrong"})
+                            }
                             else{
-                                console.log("from_redshift")
+                                console.log(chalk.magenta("Data From Redshift"))
                                 myCache.set(key,result.rows,86400)
                                 res.send({rows: JSON.stringify(result.rows),last_fetched:currTime,x_axis:row.x_axis,y_axis:row.y_axis})
                             }
@@ -160,7 +182,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
                 })
             }
             else{
-                console.log("from_cache")
+                console.log(chalk.magenta("Data From Cache"))
                 res.send({rows:JSON.stringify(cachedData),last_fetched:row.last_fetched,x_axis:row.x_axis,y_axis:row.y_axis})
             }
         }

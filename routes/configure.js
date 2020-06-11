@@ -19,10 +19,15 @@ router.get('/usecase/:usecase_id', (req, res )=> {
     let sql = `SELECT * FROM analytics_cases WHERE id = ?`
     sqliteDb.get(sql,[req.params.usecase_id],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
-        console.log(row)
-        if(err || (row!==undefined && row.length==0))
-            return res.render('templates/config_usecase/edit_usecase',{title:"Error",error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
-
+        if(err || (row!==undefined && row.length===0)) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            return res.render('templates/config_usecase/edit_usecase', {
+                title: "Error",
+                error: "Error querying Sqlite",
+                clusterName: clusterName,
+                usecase_id: req.params.usecase_id
+            })
+        }
         res.render('templates/config_usecase/edit_usecase', { title:"Edit Usecase", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
     })
 })
@@ -30,11 +35,11 @@ router.get('/usecase/:usecase_id', (req, res )=> {
 /*PUT, Edit-usecase form submisson */
 router.put('/usecase/update', (req,res)=>{
     let sql = `UPDATE analytics_cases SET title=?, tablename=? WHERE id=?`
-    console.log(sql)
     sqliteDb.run(sql,[req.body.title, req.body.tablename, req.body.id],(err)=>{
-        console.log(err)
-        if(err)
-            res.send({error:err})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
         else
             res.send({msg:"Updated Successfully!"})
     })
@@ -46,8 +51,10 @@ router.delete('/usecase/delete/:usecase_id', (req,res)=>{
         sqliteDb.run(`DELETE FROM analytics_cases WHERE id='${req.params.usecase_id}'`)
             .run(`DELETE FROM all_queries WHERE usecase_id='${req.params.usecase_id}'`)
             .run(`DELETE FROM all_plots WHERE usecase_id='${req.params.usecase_id}'`, (err, row) => {
-                if(err)
-                    return res.send({error:err})
+                if(err) {
+                    console.log(chalk.yellow("Error-sqlite: "+ err))
+                    return res.send({error: err})
+                }
                 else
                     res.send({msg:"Deleted Successfully"})
             })
@@ -64,9 +71,14 @@ router.get('/all_queries/:usecase_id', (req, res )=> {
     let sql = `SELECT * FROM all_queries WHERE usecase_id = ?`
     sqliteDb.all(sql,[req.params.usecase_id],(err,row)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
-        if(err || (row!==undefined && row.length==0))
-            return res.render('templates/config_usecase/all_queries',{error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
-
+        if(err || (row!==undefined && row.length===0)) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            return res.render('templates/config_usecase/all_queries', {
+                error: "Error querying Sqlite",
+                clusterName: clusterName,
+                usecase_id: req.params.usecase_id
+            })
+        }
         res.render('templates/config_usecase/all_queries', { title:"All Queries", clusterName:clusterName,result:row,usecase_id:req.params.usecase_id })
     })
 })
@@ -79,12 +91,12 @@ router.get('/query/add/:usecase_id', (req,res)=>{
 /* POST, Inserting Queries;  */
 router.post('/query/add/:usecase_id', urlencodedParser, (req,res)=>{
 
-    console.log(req.body)
     let sql = `INSERT INTO all_queries(usecase_id,type,title,query,description) VALUES(?,?,?,?,?)`
     sqliteDb.run(sql,[req.params.usecase_id, req.body.type, req.body.title, req.body.query, req.body.description],(err)=>{
-        console.log(err)
-        if(err)
-            res.render('templates/config_usecase/add_query', {error:[err],usecase_id:req.params.usecase_id})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.render('templates/config_usecase/add_query', {error: [err], usecase_id: req.params.usecase_id})
+        }
         else
             res.render('templates/config_usecase/add_query', {message:["Added Successfully!"],usecase_id:req.params.usecase_id})
     })
@@ -94,11 +106,11 @@ router.post('/query/add/:usecase_id', urlencodedParser, (req,res)=>{
 router.put('/query/update', urlencodedParser, (req,res)=>{
 
     let sql = `UPDATE all_queries SET type=?, title=?, query=?, description=? WHERE id=?`
-    console.log(sql)
     sqliteDb.run(sql,[req.body.type, req.body.title, req.body.query, req.body.description, req.body.id ],(err)=>{
-        console.log(err)
-        if(err)
-            res.send({error:err})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
         else
             res.send({msg:"Updated Successfully!"})
     })
@@ -110,9 +122,10 @@ router.delete('/query/delete/:id', (req,res)=>{
 
     let sql=`DELETE FROM all_queries WHERE id=?`
     sqliteDb.run(sql,[req.params.id],(err)=>{
-        console.log(err)
-        if(err)
-            res.send({error:err})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
         else
             res.send({msg:"Deleted Successfully!"})
     })
@@ -127,8 +140,14 @@ router.get('/all_plots/:usecase_id', (req,res)=>{
     sqliteDb.all(sql,[req.params.usecase_id,req.params.usecase_id],(err,rows)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
 
-        if(err || (rows!==undefined && rows.length==0))
-            return res.render('templates/config_usecase/all_plots',{error:"Error querying Sqlite",clusterName:clusterName,usecase_id:req.params.usecase_id})
+        if(err || (rows!==undefined && rows.length==0)) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            return res.render('templates/config_usecase/all_plots', {
+                error: "Error querying Sqlite",
+                clusterName: clusterName,
+                usecase_id: req.params.usecase_id
+            })
+        }
         rows.forEach((item)=>{
             item.table_columns = item.table_columns.split(',')
         })
@@ -146,13 +165,14 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
     /*Fetching tablename and columns */
     let sql=`SELECT * FROM analytics_cases WHERE id=?`
     sqliteDb.get(sql,[req.params.usecase_id],(err,row)=>{
-        if(err)
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
             return res.render('templates/error')
+        }
         else if( (row!==undefined && row.length==0))
             res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
         else{
             row.table_columns = row.table_columns.split(',')
-            console.log(typeof row.table_columns)
             res.render('templates/config_usecase/add_plot',{title:'Add Plot',table:row.tablename, result:row.table_columns, usecase_id:req.params.usecase_id, message:message ,error:error })
         }
     })
@@ -160,7 +180,6 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
 /* POST, generates sql for creating plots */
 router.post('/plot/gen_sql', (req,res)=>{
     let sql
-    console.log(req.body)
     if(req.body.date_time_format == 'epoch'){
         sql = `SELECT COUNT(distinct ${req.body.y_axis}) as ${req.body.y_axis}_count,date_trunc('day',timestamp 'epoch'+${req.body.x_axis}/1000*INTERVAL'1 second') AS days FROM marvin.${req.body.tablename} WHERE days>=current_date-$timePeriod AND days<current_date GROUP BY days order by days;`
     }
@@ -171,12 +190,11 @@ router.post('/plot/gen_sql', (req,res)=>{
 })
 /* POST, Insert new plot */
 router.post('/plot/add/:usecase_id',urlencodedParser, (req,res)=>{
-    console.log(req.body)
     let sql = `INSERT INTO all_plots(usecase_id,x_axis,y_axis,date_time_format,title,query) VALUES(?, ?, ?, ?, ?, ?)`
     sqliteDb.run(sql,[req.params.usecase_id,req.body.x_axis,req.body.y_axis,req.body.date_time_format,req.body.title,req.body.gen_sql], (err)=>{
         if(err){
-         let error = err
-         res.redirect('/config/plot/add' +req.params.usecase_id+'/?error=' + error)
+             console.log(chalk.yellow("Error-sqlite: "+ err))
+             res.redirect('/config/plot/add' +req.params.usecase_id+'/?error=' + err)
         }
         else{
             let msg = encodeURIComponent("Added Successfully!")
@@ -189,9 +207,10 @@ router.put('/plot/update', urlencodedParser, (req,res)=>{
 
     let sql = `UPDATE all_plots SET title=?, x_axis=?, y_axis=?, date_time_format=?, query=? WHERE id=?`
     sqliteDb.run(sql,[req.body.title, req.body.x_axis, req.body.y_axis, req.body.date_time_format,req.body.query,req.body.id ],(err)=>{
-        console.log(err)
-        if(err)
-            res.send({error:err})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
         else
             res.send({msg:"Updated Successfully!"})
     })
@@ -201,9 +220,10 @@ router.delete('/plot/delete/:id', (req,res)=>{
 
     let sql=`DELETE FROM all_plots WHERE id=?`
     sqliteDb.run(sql,[req.params.id],(err)=>{
-        console.log(err)
-        if(err)
-            res.send({error:err})
+        if(err) {
+            console.log(chalk.yellow("Error-sqlite: "+ err))
+            res.send({error: err})
+        }
         else
             res.send({msg:"Deleted Successfully!"})
     })
