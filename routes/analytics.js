@@ -74,7 +74,7 @@ router.post('/getData', urlencodedParser, (req,res)=>{
         else {
             let queryRedshift = row.query
             if(!validateSql(queryRedshift))
-                return res.send({error:"This sql is not permitted!"})
+                return res.send({error:"Only select statements are allowed!"})
             let key = usecase_id+"_"+id+"_"+timePeriod
             console.log("key:"+key)
             /* Adding User input to the query */
@@ -133,7 +133,7 @@ router.post('/getPlotData', urlencodedParser, (req,res)=>{
         else {
             let queryRedshift = row.query
             if(!validateSql(queryRedshift))
-                return res.send({error:"This sql is not permitted!"})
+                return res.send({error:"Only select statements are allowed!"})
             let key = usecase_id+"$"+id+"$"+timePeriod
             queryRedshift = queryRedshift.replace(/\$timePeriod/g,timePeriod)
             let cachedData =  myCache.get(key)

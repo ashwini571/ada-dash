@@ -86,7 +86,7 @@ router.post('/run_query', urlencodedParser, (req,res)=>{
 
   let query = req.body.query
   if(!validateSql(query))
-     return res.send({error:"This sql is not permitted!"})
+     return res.send({error:"Only select statements are allowed!"})
   redshiftClient.query(query, (error,result)=>{
     console.log(result)
     if(error)

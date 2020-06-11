@@ -42,9 +42,13 @@ function getData(reqBody,url,callback) {
     fetch(url,init)
         .then((res)=>{
             return res.json()
-        }).then((data)=>{
+        })
+        .then((data)=>{
         callback(data)
-    })
+        })
+        .catch((error)=>{
+            alert(error)
+        })
 }
 
 /* functions for editing and deleting query and plots */
@@ -65,7 +69,10 @@ function putData(reqBody,url) {
         }
         else
             console.log(data.error)
-    })
+        })
+        .catch((error)=>{
+            alert(error)
+        })
 }
 // Delete function via fetch()
 function delData(url,type) {
@@ -85,7 +92,10 @@ function delData(url,type) {
         }
         else
             alert(data.error)
-    })
+        })
+        .catch((error)=>{
+            alert(error)
+        })
 }
 
 /* functions for creating csv from html */

@@ -19,14 +19,14 @@ $(document).ready(function() {
     /* Adds the recieved data to output */
     function parseDataToDom(data, type) {
         clearCard()
-        //Last-fetched time update
+        //Last-fetched time update (Suitable for every type except filter )
         if(type !== 'filter'){
             lastFetchedDiv.style.display = ""
             let lastFetchedTimeElement =document.getElementById('time_last_fetched')
             lastFetchedTimeElement.innerText = data.last_fetched
             lastFetchedTimeElement.innerText += "[UTC]"
         }
-        // for export-csv button
+        // for export-csv button(suitable for only table output)
         if(type === 'filter' || type === 'custom'){
             exportBtnDiv.style.display = ""
         }
@@ -34,7 +34,11 @@ $(document).ready(function() {
         // Data
         if (type === 'count') {
             let rows = JSON.parse(data.rows)
-            output.innerHTML= `<h2> Count:- ${rows[0].count} </h2>`
+            output.innerHTML= `<h2> Count: ${rows[0].count} </h2>`
+        }
+        else if(type === 'percent'){
+            let rows = JSON.parse(data.rows)
+            output.innerHTML= `<h2> Percentage: ${rows[0].percentage} </h2>`
         }
         else if(type === 'plot') {
             createPlot(data,data.x_axis,data.y_axis)
