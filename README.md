@@ -10,7 +10,7 @@ clusters at the backend and automates the process of running queries on redshift
     * Express
     * Handlebars
     * Node-redshift
-    * Nodemon
+    * Node-cache
 * Database
     * Redshift - Analytics data
     * Sqlite - Metadata   
@@ -18,20 +18,25 @@ clusters at the backend and automates the process of running queries on redshift
 * Bootstrap
 * JQuery
 * JQueryUI
+* JqueryUi-touch-punch
 * Pivottable
 * Plotly
+* Font-Awesome
      
 ## DB-Schema(Sqlite)
 **analytics_cases**
 
-id  | title |
------ | -------- |
+id  | title | tablename | table_columns
+----- | -------- | ----- | ---|
 
  **all_queries**  
  
-  usecase_id  | type | title | query | last_fetched|
-  ----- | -------- | -------- | ----| ------------|
-    
+  id |usecase_id  | type | title | query | last_fetched|
+  ---| ----- | -------- | -------- | ----| ------------|
+   **all_plots**  
+     
+   id | usecase_id  | x-axis | y-axis | date_time_format | title| query | last_fetched |
+    ---- |  ----- | -------- | -------- | ----| ------------| ---- | -------|
 
 
 
