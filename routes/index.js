@@ -17,6 +17,7 @@ const app = express()
 
 /* GET, home page. */
 router.get('/',paginate.middleware(9,50),(req, res, next)=>{
+
   sqliteDb.get(`SELECT COUNT(*) as total_count FROM analytics_cases`, (err,row)=>{
       if(err)
           console.log(chalk.yellow("Error-Sqlite:"+err))
@@ -87,6 +88,7 @@ router.get('/search', (req,res)=>{
   })
 })
 
+/* Running custom query, kindof sql workbench */
 router.get('/run_query', (req,res)=>{
     res.render('templates/run_query',{title:'Run', clusterName:clusterName})
 })

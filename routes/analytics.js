@@ -27,7 +27,8 @@ router.get('/:usecase_id', (req, res )=> {
     /*Verifiying usecase id */
     sqliteDb.get(`SELECT * FROM analytics_cases WHERE id=?`, [req.params.usecase_id], (err,row)=>{
         if(err || (row===undefined)) {
-            console.log(chalk.yellow("Error-sqlite: "+err))
+            if(err)
+                console.log(chalk.yellow("Error-sqlite: "+err))
             return res.render('templates/error')
         }
         else{

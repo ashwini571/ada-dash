@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const redshift = require('../src/utils/redshift_connect')
 const sqliteDb = require('../src/utils/sqlite_connect')
-
+const chalk = require('chalk')
 /* Middleware for getting POST body data */
 const bodyParser = require('body-parser')
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -140,7 +140,7 @@ router.get('/all_plots/:usecase_id', (req,res)=>{
     sqliteDb.all(sql,[req.params.usecase_id,req.params.usecase_id],(err,rows)=>{
         /* row.length==0 so that it doesn't catch error in  row[0].title*/
 
-        if(err || (rows!==undefined && rows.length==0)) {
+        if(err || (rows!==undefined && rows.length===0)) {
             console.log(chalk.yellow("Error-sqlite: "+ err))
             return res.render('templates/config_usecase/all_plots', {
                 error: "Error querying Sqlite",
@@ -169,7 +169,7 @@ router.get('/plot/add/:usecase_id', (req,res)=>{
             console.log(chalk.yellow("Error-sqlite: "+ err))
             return res.render('templates/error')
         }
-        else if( (row!==undefined && row.length==0))
+        else if( (row!==undefined && row.length===0))
             res.render('templates/config_usecase/add_plot',{title:'Add Plot',error:"No data found", usecase_id:req.params.usecase_id})
         else{
             row.table_columns = row.table_columns.split(',')
